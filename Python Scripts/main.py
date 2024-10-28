@@ -18,3 +18,4 @@ while True:
     # Operation completed successfully, exit loop
     print("Camera initialized successfully.")
     break
+
