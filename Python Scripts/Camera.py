@@ -50,10 +50,12 @@ class Camera:
 	def initalize_camera(self):
 		while True:
 			try:
+				print("Please set your camera to PC-remote.")
 				print("Please plug in your sony A-6000")
 				self.camera = gp.Camera()
 				self.camera.init()
 				print("Camera initialized successfully.")
+				break
 			except gp.GPhoto2Error as ex:
 				if ex.code == gp.GP_ERROR_MODEL_NOT_FOUND:
 					print("Camera not found. Retrying to connection in 2 seconds.")
@@ -70,9 +72,17 @@ class Camera:
 			print("Error setting focus.")
 	
 	def take_photo(self):
+		print("Taking photo")
 		file_path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
+		target = f"./{file_path.name}"
+		self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL).save(target)
 		
 	def exit(self):
 		if self.camera:
 			self.camera.exit()
-		
+
+camera = Camera()
+time.sleep(2)  # Wait for the camera to initialize
+camera.take_photo()
+camera.exit()
+	
