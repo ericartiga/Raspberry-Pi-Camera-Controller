@@ -1,4 +1,4 @@
-# Controlling Sony A6000 with Raspberry PI
+# Controlling Sony A6000 with Raspberry Pi
 **CMPT 2200 Project - October 24 2024**
 
 **Functionality Ideas:**
