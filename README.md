@@ -1,4 +1,4 @@
-# Raspberry-Pi-Camera-Controller
+# Controlling Sony A6000 with Raspberry PI
 **CMPT 2200 Project - October 24 2024**
 
 **Functionality Ideas:**
