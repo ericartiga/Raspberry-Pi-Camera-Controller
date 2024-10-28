@@ -15,7 +15,7 @@ GPIO.output(TRIG_PIN,GPIO.LOW)
 time.sleep(2)
 
 #PIN for 7 Segment LED
-e
+
 #PIN for Buttons
 BLUE_BUTTON = 22
 BLACK_BUTTON = 17
@@ -46,7 +46,7 @@ class Camera:
 	def __init__(self):
 		self.camera = None
 		self.initalize_camera()
-	
+		
 	def initalize_camera(self):
 		while True:
 			try:
@@ -54,12 +54,11 @@ class Camera:
 				self.camera = gp.Camera()
 				self.camera.init()
 				print("Camera initialized successfully.")
-            break
-         except gp.GPhoto2Error as ex:
+			except gp.GPhoto2Error as ex:
 				if ex.code == gp.GP_ERROR_MODEL_NOT_FOUND:
-					print("Camera not found. Retrying connection in 2 seconds.")
+					print("Camera not found. Retrying to connection in 2 seconds.")
 					time.sleep(2)
-               continue
+					continue
 				raise
 				
 	def set_focus(self, distance):
@@ -74,6 +73,6 @@ class Camera:
 		file_path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
 		
 	def exit(self):
-        if self.camera:
-            self.camera.exit()
+		if self.camera:
+			self.camera.exit()
 		
