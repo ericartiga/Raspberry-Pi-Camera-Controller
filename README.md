@@ -47,6 +47,7 @@ sudo apt-get install gphoto2 (interface library)
 - [gphoto2 beginner's tutorial](https://www.youtube.com/watch?v=1eAYxnSU2aw)
 - [gphoto2 informations](https://pypi.org/project/gphoto2/)
 - [gphoto documentation](http://www.gphoto.org/doc/)
+- [Alternative: Sony SDK](https://docodethatmatters.com/hacking-sony-a6000-for-modernization/)
 
 **Implementation Ideas:**
 
