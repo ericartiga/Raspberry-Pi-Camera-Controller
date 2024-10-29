@@ -27,7 +27,7 @@ Tkinter
 sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
 ```
 ```
-sudo apt-get install gphoto2 (interface library)
+sudo apt-get install gphoto2 
 ```
 
 **Components:**
