@@ -13,12 +13,22 @@
 - RGB Led and buzzer to indicate in focus or not.
 - White Led and buzzer beep to countdown set timer.
 - Red Led and buzzer to indicate photo being shot.
+- Recommended Camera Focus for manual mode.
+
+**Hardware Ideas:**
+- Controller Interface to control camera functionality
+- Distance sensor to detect subject distance.
+
+**GUI Ideas:**
+- Different GUI options available depending on camera mode (autofocus vs manual)
 	
 **Library Used:**
 
 [Libgphoto2 (C Library)](http://www.gphoto.org/doc/)
 
 [Python-gphoto2 (Python interface or binding to gphoto2)](https://pypi.org/project/gphoto2/)
+
+PIL
 
 Tkinter
 
@@ -48,6 +58,7 @@ sudo apt-get install gphoto2
 - [gphoto2 informations](https://pypi.org/project/gphoto2/)
 - [gphoto documentation](http://www.gphoto.org/doc/)
 - [Alternative: Sony SDK](https://docodethatmatters.com/hacking-sony-a6000-for-modernization/)
+- [GUI Active Update](https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/)
 
 **Implementation Ideas:**
 
