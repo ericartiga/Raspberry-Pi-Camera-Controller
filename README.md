@@ -15,6 +15,7 @@
 - Red Led and buzzer to indicate photo being shot.
 - Recommended Camera Focus for manual mode.
 - Send photo to the email (set in the software, uses dummy email)
+- Image filter
 
 **Hardware Ideas:**
 - Controller Interface to control camera functionality
@@ -60,6 +61,9 @@ sudo apt-get install gphoto2
 - [gphoto documentation](http://www.gphoto.org/doc/)
 - [Alternative: Sony SDK](https://docodethatmatters.com/hacking-sony-a6000-for-modernization/)
 - [GUI Active Update](https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/)
+- [CV image filter tutotiral](https://stackoverflow.com/questions/69871650/adding-bloom-effect-to-an-image-using-cv2)
+- [Pillow image fitler tutorial 1](https://www.geeksforgeeks.org/python-pil-image-filter-with-imagefilter-module/)
+- [Pillow image filter tutorial 2](https://pythonexamples.org/python-pillow-image-filter/)
 
 **Implementation Ideas:**
 
