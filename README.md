@@ -14,6 +14,7 @@
 - White Led and buzzer beep to countdown set timer.
 - Red Led and buzzer to indicate photo being shot.
 - Recommended Camera Focus for manual mode.
+- Send photo to the email (set in the software, uses dummy email)
 
 **Hardware Ideas:**
 - Controller Interface to control camera functionality
