@@ -1,5 +1,5 @@
 # Controlling Sony A6000 with Raspberry Pi
-** CMPT 2200 Project - October 24 2024**
+**CMPT 2200 Project - October 24 2024**
 
 ## Functionality Ideas:
 - Take photos using set timer with physical button to 
