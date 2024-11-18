@@ -46,6 +46,10 @@ sudo apt-get install gphoto2
 ```
 gphoto2 --list-config
 ```
+```
+gphoto2 --get-config <setting>
+```
+
 
 ## Components:
 - 1x 7 segment display
