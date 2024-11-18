@@ -7,7 +7,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 #PIN for Ultrasonic Distance Sensor
-TRIG_PIN = 20
+TRIG_PIN = 16
 ECHO_PIN = 21
 
 GPIO.setup(TRIG_PIN, GPIO.OUT)
@@ -79,22 +79,67 @@ class Camera:
 			self.camera.exit()
 	
 	def change_camera_mode(self, mode):
+		config = self.camera.get_config()
 		if mode == "manual":
 			self.camera.set_config_value("focusmode", "manual")
 		if mode == "auto":
 			self.camera.set_config_value("focusmode", "auto")
 			
-	def set_exposure(value):
-		
-		
-	def set_shutter():
-		return
+	def set_iso(self, value):
+		try:
+			# Get the camera configuration
+			config = self.camera.get_config()
 
-#gphoto2 --list-config
+			# Look for the 'iso' setting under 'imgsettings'
+			iso_node = config.get_child_by_name("iso")
+
+			# Check if the ISO node is writable
+			if iso_node:
+				# Set the ISO value (ensure it's a string)
+				iso_node.set_value(str(value))
+				self.camera.set_config(config)
+				print(f"ISO set to: {value}")
+			else:
+				print("ISO setting is not available or not writable.")
+		
+		except gp.GPhoto2Error as ex:
+			print(f"Error setting ISO: {ex}")
+		
+	def get_iso(self):
+		config = self.camera.get_config()
+		return config.get_child_by_name('iso').get_value()
+		
+	def set_shutter(self, value):
+		try:
+			# Get the camera configuration
+			config = self.camera.get_config()
+
+			# Look for the 'iso' setting under 'imgsettings'
+			iso_node = config.get_child_by_name("shutterspeed")
+
+			# Check if the shutter node is writable
+			if iso_node:
+				iso_node.set_value(str(value))
+				self.camera.set_config(config)
+			else:
+				print("ISO setting is not available or not writable.")
+		
+		except gp.GPhoto2Error as ex:
+			print(f"Error setting ISO: {ex}")
+	
+	def set_aperture(self, value):
+		config = self.camera.get_config()
+	
+	def get_battery_life(self):
+		config = self.camera.get_config()
+		return config.get_child_by_name('batterylevel').get_value()
 	
 
 camera = Camera()
-camera.set_focus(get_distance())
-camera.take_photo()
+print(camera.get_battery_life())
+print(camera.get_iso())
+camera.set_iso(8000)
+camera.set_shutter(1/500)
+print(camera.get_iso())
 camera.exit()
 	
