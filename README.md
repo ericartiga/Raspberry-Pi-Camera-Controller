@@ -65,6 +65,7 @@ gphoto2 --get-config <setting>
 
 ## Resources & Tutorial:
 
+- [libgphoto2 Data Structures](http://www.gphoto.org/doc/api/struct__CameraFunctions.html)
 - [gphoto2 beginner's tutorial](https://www.youtube.com/watch?v=1eAYxnSU2aw)
 - [gphoto2 informations](https://pypi.org/project/gphoto2/)
 - [gphoto documentation](http://www.gphoto.org/doc/)
