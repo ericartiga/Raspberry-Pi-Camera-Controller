@@ -1,7 +1,7 @@
 # Controlling Sony A6000 with Raspberry Pi
-##CMPT 2200 Project - October 24 2024
+## CMPT 2200 Project - October 24 2024
 
-###Functionality Ideas:
+### Functionality Ideas:
 - Take photos using set timer with physical button to 
 - Display and set time from 3-9s
 - Buzzer beep to countdown set timer.
@@ -17,14 +17,14 @@
 - Send photo to the email (set in the software, uses dummy email)
 - Image filter
 
-###Hardware Ideas:
+### Hardware Ideas:
 - Controller Interface to control camera functionality
 - Distance sensor to detect subject distance.
 
-###GUI Ideas:
+### GUI Ideas:
 - Different GUI options available depending on camera mode (autofocus vs manual)
 	
-###Library Used:
+### Library Used:
 
 [Libgphoto2 (C Library)](http://www.gphoto.org/doc/)
 
@@ -34,7 +34,7 @@ PIL
 
 Tkinter
 
-###Library Installations:
+### Library Installations:
 ```
 sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
 ```
@@ -42,12 +42,12 @@ sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
 sudo apt-get install gphoto2 
 ```
 
-###Useful Commands
+### Useful Commands
 ```
 gphoto2 --list-config
 ```
 
-###Components:
+### Components:
 - 1x 7 segment display
 - 1x Buzzer
 - 1x Ultrasonic Sensor
@@ -59,7 +59,7 @@ gphoto2 --list-config
 - 1x Sony A6000 Camera (Supported Cameras: http://www.gphoto.org/proj/libgphoto2/support.php)
 - 1x Usb cable
 
-###Resources & Tutorial:
+### Resources & Tutorial:
 
 - [gphoto2 beginner's tutorial](https://www.youtube.com/watch?v=1eAYxnSU2aw)
 - [gphoto2 informations](https://pypi.org/project/gphoto2/)
@@ -70,7 +70,7 @@ gphoto2 --list-config
 - [Pillow image fitler tutorial 1](https://www.geeksforgeeks.org/python-pil-image-filter-with-imagefilter-module/)
 - [Pillow image filter tutorial 2](https://pythonexamples.org/python-pillow-image-filter/)
 
-###Implementation Ideas:
+### Implementation Ideas:
 
 - CalculateDistance function: calculate distance from the ultrasonic sensor to the subject
 - TakePhoto: Standard countdown of 3. Take picture and save to a folder on the desktop? Or sd not sure
