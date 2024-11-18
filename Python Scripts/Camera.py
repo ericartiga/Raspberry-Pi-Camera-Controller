@@ -78,11 +78,14 @@ class Camera:
 		if self.camera:
 			self.camera.exit()
 	
-	def change_camera_mode():
-		return
-	
-	def set_exposure():
-		return
+	def change_camera_mode(self, mode):
+		if mode == "manual":
+			self.camera.set_config_value("focusmode", "manual")
+		if mode == "auto":
+			self.camera.set_config_value("focusmode", "auto")
+			
+	def set_exposure(value):
+		
 		
 	def set_shutter():
 		return
