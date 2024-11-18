@@ -13,12 +13,24 @@
 - RGB Led and buzzer to indicate in focus or not.
 - White Led and buzzer beep to countdown set timer.
 - Red Led and buzzer to indicate photo being shot.
+- Recommended Camera Focus for manual mode.
+- Send photo to the email (set in the software, uses dummy email)
+- Image filter
+
+**Hardware Ideas:**
+- Controller Interface to control camera functionality
+- Distance sensor to detect subject distance.
+
+**GUI Ideas:**
+- Different GUI options available depending on camera mode (autofocus vs manual)
 	
 **Library Used:**
 
 [Libgphoto2 (C Library)](http://www.gphoto.org/doc/)
 
 [Python-gphoto2 (Python interface or binding to gphoto2)](https://pypi.org/project/gphoto2/)
+
+PIL
 
 Tkinter
 
@@ -27,7 +39,7 @@ Tkinter
 sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
 ```
 ```
-sudo apt-get install gphoto2 (interface library)
+sudo apt-get install gphoto2 
 ```
 
 **Components:**
@@ -47,6 +59,11 @@ sudo apt-get install gphoto2 (interface library)
 - [gphoto2 beginner's tutorial](https://www.youtube.com/watch?v=1eAYxnSU2aw)
 - [gphoto2 informations](https://pypi.org/project/gphoto2/)
 - [gphoto documentation](http://www.gphoto.org/doc/)
+- [Alternative: Sony SDK](https://docodethatmatters.com/hacking-sony-a6000-for-modernization/)
+- [GUI Active Update](https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/)
+- [CV image filter tutotiral](https://stackoverflow.com/questions/69871650/adding-bloom-effect-to-an-image-using-cv2)
+- [Pillow image fitler tutorial 1](https://www.geeksforgeeks.org/python-pil-image-filter-with-imagefilter-module/)
+- [Pillow image filter tutorial 2](https://pythonexamples.org/python-pillow-image-filter/)
 
 **Implementation Ideas:**
 
