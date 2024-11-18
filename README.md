@@ -42,6 +42,11 @@ sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
 sudo apt-get install gphoto2 
 ```
 
+**Useful Commands**
+```
+gphoto2 --list-config
+```
+
 **Components:**
 - 1x 7 segment display
 - 1x Buzzer
