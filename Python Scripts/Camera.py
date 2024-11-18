@@ -148,7 +148,7 @@ class Camera:
 	
 	def get_aperture(self):
 		config = self.camera.get_config()
-		return config.get_child_by_name('shutterspeed').get_value()
+		return config.get_child_by_name('f-number').get_value()
 	
 	def get_battery_life(self):
 		config = self.camera.get_config()
