@@ -116,11 +116,11 @@ class Camera:
 			shutter_node = config.get_child_by_name("shutterspeed")
 
 			# Check if the shutter node is writable
-			if iso_node:
-				iso_node.set_value(str(value))
+			if shutter_node:
+				shutter_node.set_value(str(value))
 				self.camera.set_config(config)
 			else:
-				print("ISO setting is not available or not writable.")
+				print("shutter setting is not available or not writable.")
 		
 		except gp.GPhoto2Error as ex:
 			print(f"Error setting ISO: {ex}")
@@ -130,7 +130,21 @@ class Camera:
 		return config.get_child_by_name('shutterspeed').get_value()
 	
 	def set_aperture(self, value):
-		config = self.camera.get_config()
+		try:
+			# Get the camera configuration
+			config = self.camera.get_config()
+			
+			aperture_node = config.get_child_by_name("f-number")
+
+			# Check if the aperture node is writable
+			if aperture_node:
+				aperture_node.set_value(str(value))
+				self.camera.set_config(config)
+			else:
+				print("aperture setting is not available or not writable.")
+		
+		except gp.GPhoto2Error as ex:
+			print(f"Error setting ISO: {ex}")
 	
 	def get_aperture(self):
 		config = self.camera.get_config()
@@ -145,7 +159,8 @@ camera = Camera()
 print(camera.get_battery_life())
 print(camera.get_iso())
 camera.set_iso(8000)
-camera.set_shutter(1/500)
+camera.set_shutter(320)
+camera.set_aperture(1.8)
 print(camera.get_iso())
 camera.exit()
 	
