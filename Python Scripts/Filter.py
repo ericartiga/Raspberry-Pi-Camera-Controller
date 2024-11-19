@@ -17,11 +17,11 @@ class imageManip:
 	# Do the image processing for CV
 	# Update image pil using copy
 		
-	def applyMonochrome():
+	def applyMonochrome(self):
 		self.image_PIL = img.convert('L')
 		self.image_CV = self.image_PIL.copy()
 		
-	def applySepia():
+	def applySepia(self):
 		width, height = self.image_PIL.size
 		pixels = self.image_PIL.load()
 
