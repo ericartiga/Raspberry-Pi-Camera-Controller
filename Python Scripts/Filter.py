@@ -6,7 +6,7 @@ class imageManip:
 	def __init__(self, image_path: str):
 		self.image_PIL = Image.open(image_path)
 		self.image_CV = np.array(self.image_PIL)
-		self.original_image = self.imagePIL.copy()
+		self.original_image = self.image_PIL.copy()
 		self.original_image_CV = self.image_CV.copy() 
 		
 	#format of function PIL
@@ -18,7 +18,7 @@ class imageManip:
 	# Update image pil using copy
 		
 	def applyMonochrome(self):
-		self.image_PIL = img.convert('L')
+		self.image_PIL = self.image_PIL.convert('L')
 		self.image_CV = self.image_PIL.copy()
 		
 	def applySepia(self):
@@ -27,7 +27,7 @@ class imageManip:
 
 		for py in range(height):
 			for px in range(width):
-				r, g, b = image_PIL.getpixel((px, py))
+				r, g, b = self.image_PIL.getpixel((px, py))
 
 				tr = int(0.393 * r + 0.769 * g + 0.189 * b)
 				tg = int(0.349 * r + 0.686 * g + 0.168 * b)
@@ -44,9 +44,9 @@ class imageManip:
 
 				pixels[px, py] = (tr,tg,tb)
 				
-		self.image_cv = np.array(self.image_pil)
+		self.image_CV = np.array(self.image_PIL)
 	
-	def applyBloom(self, thresh_value=245, blur_value=50, gain=6)
+	def applyBloom(self, thresh_value=245, blur_value=50, gain=6):
 
 		# Convert image to hsv colorspace as floats
 		hsv = cv2.cvtColor(self.image_CV, cv2.COLOR_BGR2HSV).astype(np.float64)
@@ -64,12 +64,18 @@ class imageManip:
 		blur = cv2.cvtColor(blur, cv2.COLOR_GRAY2BGR)
 
 		# Blend the blur with the original image using the gain
-		result = cv2.addWeighted(img, 1, blur, gain, 0)
+		result = cv2.addWeighted(self.image_CV, 1, blur, gain, 0)
 
 		# Save the output image
-		elf.image_PIL = Image.fromarray(result)
+		self.image_PIL = Image.fromarray(result)
 		self.image_CV = result
+	
+	def save(self):
+		self.image_PIL.save("../Image/testoutput.jpg")
 
+image = imageManip("/home/admin/Desktop/Raspberry-Pi-Camera-Controller/Image/test.jpg")
+image.applyBloom()
+image.save()
 
 
 

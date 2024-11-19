@@ -78,7 +78,7 @@ class Camera:
 		if self.camera:
 			self.camera.exit()
 	
-	def change_camera_mode(self, mode): #"AF-A" or "Manual"
+	def set_camera_mode(self, mode): #"AF-A" or "Manual"
 		try:
 			# Get the camera configuration
 			config = self.camera.get_config()
