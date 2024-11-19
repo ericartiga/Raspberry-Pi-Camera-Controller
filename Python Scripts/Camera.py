@@ -78,12 +78,22 @@ class Camera:
 		if self.camera:
 			self.camera.exit()
 	
-	def change_camera_mode(self, mode):
-		config = self.camera.get_config()
-		if mode == "manual":
-			self.camera.set_config_value("focusmode", "manual")
-		if mode == "auto":
-			self.camera.set_config_value("focusmode", "auto")
+	def change_camera_mode(self, mode): #"AF-A" or "Manual"
+		try:
+			# Get the camera configuration
+			config = self.camera.get_config()
+
+			focus_node = config.get_child_by_name("focusmode")
+
+			if focus_node:
+				focus_node.set_value(mode)
+				self.camera.set_config(config)
+				print(f"Camera Mode set to: {mode}")
+			else:
+				print("Camera Mode setting is not available or not writable.")
+		
+		except gp.GPhoto2Error as ex:
+			print(f"Error setting Camera Mode: {ex}")
 			
 	def set_iso(self, value):
 		try:
@@ -154,14 +164,6 @@ class Camera:
 		config = self.camera.get_config()
 		return config.get_child_by_name('batterylevel').get_value()
 	
-
-camera = Camera()
-print(camera.get_battery_life())
-print(camera.get_shutter())
-
-camera.set_shutter("1/300")
-print(camera.get_shutter())
-
-camera.exit()
+	
 	
 
