@@ -5,9 +5,9 @@ import numpy as np
 class imageManip:
 	def __init__(self, image_path: str):
 		self.image_PIL = Image.open(image_path)
-		self.image_CV = np.array(self.image_pil)
-		self.original_image = self.image.copy()
-		self.original_image_CV = self.image_cv.copy() 
+		self.image_CV = np.array(self.image_PIL)
+		self.original_image = self.imagePIL.copy()
+		self.original_image_CV = self.image_CV.copy() 
 		
 	#format of function PIL
 	# Do the image processing for PIL
@@ -45,31 +45,31 @@ class imageManip:
 				pixels[px, py] = (tr,tg,tb)
 				
 		self.image_cv = np.array(self.image_pil)
+	
+	def applyBloom(self, thresh_value=245, blur_value=50, gain=6)
 
-def applyBloom(ImageLocation, output_location, thresh_value=245, blur_value=50, gain=6):
-    # Read image
-    img = cv2.imread(ImageLocation)
+		# Convert image to hsv colorspace as floats
+		hsv = cv2.cvtColor(self.image_CV, cv2.COLOR_BGR2HSV).astype(np.float64)
+		h, s, v = cv2.split(hsv)
 
-    # Convert image to hsv colorspace as floats
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.float64)
-    h, s, v = cv2.split(hsv)
+		# Desired low saturation and high brightness for white
+		# So invert saturation and multiply with brightness
+		sv = ((255 - s) * v / 255).clip(0, 255).astype(np.uint8)
 
-    # Desired low saturation and high brightness for white
-    # So invert saturation and multiply with brightness
-    sv = ((255 - s) * v / 255).clip(0, 255).astype(np.uint8)
+		# Apply threshold
+		thresh = cv2.threshold(sv, thresh_value, 255, cv2.THRESH_BINARY)[1]
 
-    # Apply threshold
-    thresh = cv2.threshold(sv, thresh_value, 255, cv2.THRESH_BINARY)[1]
+		# Apply Gaussian blur
+		blur = cv2.GaussianBlur(thresh, (0, 0), sigmaX=blur_value, sigmaY=blur_value)
+		blur = cv2.cvtColor(blur, cv2.COLOR_GRAY2BGR)
 
-    # Apply Gaussian blur
-    blur = cv2.GaussianBlur(thresh, (0, 0), sigmaX=blur_value, sigmaY=blur_value)
-    blur = cv2.cvtColor(blur, cv2.COLOR_GRAY2BGR)
+		# Blend the blur with the original image using the gain
+		result = cv2.addWeighted(img, 1, blur, gain, 0)
 
-    # Blend the blur with the original image using the gain
-    result = cv2.addWeighted(img, 1, blur, gain, 0)
+		# Save the output image
+		elf.image_PIL = Image.fromarray(result)
+		self.image_CV = result
 
-    # Save the output image
-    cv2.imwrite(output_location, result)
 
 
 
