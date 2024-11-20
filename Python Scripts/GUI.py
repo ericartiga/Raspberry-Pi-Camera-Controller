@@ -55,11 +55,11 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import subprocess
 from ImageManip import imageManip
-from Camera import Camera
+from camera import Camera
 
 # Main window setup
 mainwindow = tk.Tk()
-#currentCamera = Camera()
+currentCamera = Camera()
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
@@ -248,7 +248,7 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 
 def packMain():
     image_display.pack()
-    filterWindow.title("Remote Control Interface: " + cameraName)
+    mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_name())
     
     cameraName.grid(row=0, column=11, columnspan=2)
     
