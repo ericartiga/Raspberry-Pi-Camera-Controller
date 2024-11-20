@@ -1,52 +1,52 @@
-##
-#GPIO Codes
-##
-import time
-import RPi.GPIO as GPIO
+# ##
+# #GPIO Codes
+# ##
+# import time
+# import RPi.GPIO as GPIO
 
-# Set up GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+# # Set up GPIO
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setwarnings(False)
 
-#PIN for Ultrasonic Distance Sensor
-TRIG_PIN = 16
-ECHO_PIN = 21
+# #PIN for Ultrasonic Distance Sensor
+# TRIG_PIN = 16
+# ECHO_PIN = 21
 
-GPIO.setup(TRIG_PIN, GPIO.OUT)
-GPIO.setup(ECHO_PIN, GPIO.IN)
+# GPIO.setup(TRIG_PIN, GPIO.OUT)
+# GPIO.setup(ECHO_PIN, GPIO.IN)
 
-GPIO.output(TRIG_PIN,GPIO.LOW)
-print("waiting for sensor to initialize")
-time.sleep(2)
+# GPIO.output(TRIG_PIN,GPIO.LOW)
+# print("waiting for sensor to initialize")
+# time.sleep(2)
 
-#PIN for 7 Segment LED
+# #PIN for 7 Segment LED
 
-#PIN for Buttons
-BLUE_BUTTON = 22
-BLACK_BUTTON = 17
-GPIO.setup(BLUE_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(BLACK_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# #PIN for Buttons
+# BLUE_BUTTON = 22
+# BLACK_BUTTON = 17
+# GPIO.setup(BLUE_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# GPIO.setup(BLACK_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-#PIN for Buzzer
+# #PIN for Buzzer
 
-#PIN for LEDs
+# #PIN for LEDs
 
-#Auxilarry functions
-def get_distance(): #cm
-	GPIO.output(TRIG_PIN,GPIO.HIGH)
-	time.sleep(0.00001)
-	GPIO.output(TRIG_PIN,GPIO.LOW)
+# #Auxilarry functions
+# def get_distance(): #cm
+	# GPIO.output(TRIG_PIN,GPIO.HIGH)
+	# time.sleep(0.00001)
+	# GPIO.output(TRIG_PIN,GPIO.LOW)
 	
-	while GPIO.input(ECHO_PIN) == 0:
-		pulse_send = time.time()
+	# while GPIO.input(ECHO_PIN) == 0:
+		# pulse_send = time.time()
 	
-	while GPIO.input(ECHO_PIN) == 1:
-		pulse_received = time.time()
+	# while GPIO.input(ECHO_PIN) == 1:
+		# pulse_received = time.time()
 	
-	distance = ((pulse_received-pulse_send) * 34300) / 2
-	return distance 
+	# distance = ((pulse_received-pulse_send) * 34300) / 2
+	# return distance 
 
-num = get_distance()
+# num = get_distance()
 
 ##
 #GUI Codes
@@ -54,11 +54,12 @@ num = get_distance()
 import tkinter as tk
 from PIL import Image, ImageTk
 import subprocess
-import ImageManip
-import Camera
+from ImageManip import imageManip
+from Camera import Camera
 
 # Main window setup
 mainwindow = tk.Tk()
+#currentCamera = Camera()
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
@@ -66,9 +67,9 @@ imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
 imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
 
 # Load the original image (for resizing)
-original_image = Image.open("../Image/test.jpg")
+imageSrc = imageManip("../Image/test.jpg")
 initial_width, initial_height = 640, 360
-current_image = original_image.resize((initial_width, initial_height))  # Initial size
+current_image = imageSrc.image_PIL.resize((initial_width, initial_height))  # Initial size
 display_image = ImageTk.PhotoImage(current_image)
 
 image_display = tk.Label(master=imageFrame, image=display_image)
@@ -82,6 +83,7 @@ shutterSpeed = 0
 def setShutterSpeed():
     global shutterSpeed
     shutterSpeed = int(shutterSpeedEntry.get())
+    currentCamera.set_shutter(shutterSpeed)
     shutterSpeedLabel.config(text="Shutter Speed: " + str(shutterSpeed))
 
 shutterSpeedEntry = tk.Entry(master=mainwindow)
@@ -93,6 +95,7 @@ iso = 0
 def setISO():
     global iso
     iso = int(isoEntry.get())
+    currentCamera.set_iso(iso)
     isoLabel.config(text="ISO: " + str(iso))
 
 isoEntry = tk.Entry(master=mainwindow)
@@ -104,9 +107,11 @@ cameraMode = tk.IntVar(value=1)
 def setCameraMode():
     if cameraMode.get() == 0:
         cameraModeLabel.config(text="Camera Mode: Auto")
+        currentCamera.set_camera_mode("AF-A")
         forgetManual()
     elif cameraMode.get() == 1:
         cameraModeLabel.config(text="Camera Mode: Manual")
+        currentCamera.set_camera_mode("Manual")
         packManual()
 
 cameraModeSet = tk.Button(master=mainwindow, text="Set", command=setCameraMode)
@@ -115,27 +120,46 @@ manualRadio = tk.Radiobutton(master=mainwindow, text="Manual", variable=cameraMo
 cameraModeLabel = tk.Label(master=mainwindow, text="Camera Mode:")
 
 # Filter Controls
-filterVar = tk.IntVar(value=0)
+# Function to open the filter window
+
+def update_display_image():
+    processed_image = imageSrc.get_image_PIL()
+    image_display.config(image=processed_image)
+    image_display.image = processed_image
+    
 def openFilters():
     filterWindow = tk.Tk()
+    
+    filterVar = tk.IntVar(value=0)  # Variable for filter selection (default is None)
     
     def cancel():
         filterWindow.destroy()
         
     def apply():
-        pass
+        if filterVar.get() == 1:
+            imageSrc.applyMonochrome()
+        elif filterVar.get() == 2:
+            imageSrc.applySepia()
+        elif filterVar.get() == 3:
+            imageSrc.applyBloom()
+        
+        update_display_image()  
+        filterWindow.destroy() 
     
     cancelButton = tk.Button(master=filterWindow, text="Cancel", command=cancel)
     applyButton = tk.Button(master=filterWindow, text="Apply", command=apply)
+    
+    # Filter options
     noneRadio = tk.Radiobutton(master=filterWindow, text="None", variable=filterVar, value=0)
-    f1 = tk.Radiobutton(master=filterWindow, text="f1", variable=filterVar, value=1)
-    f2 = tk.Radiobutton(master=filterWindow, text="f2", variable=filterVar, value=2)
-    f3 = tk.Radiobutton(master=filterWindow, text="f3", variable=filterVar, value=3)
+    monochromeRadio = tk.Radiobutton(master=filterWindow, text="Monochrome", variable=filterVar, value=1)
+    sepiaRadio = tk.Radiobutton(master=filterWindow, text="Sepia", variable=filterVar, value=2)
+    bloomRadio = tk.Radiobutton(master=filterWindow, text="Bloom", variable=filterVar, value=3)
     
     noneRadio.grid(row=0, column=0, columnspan=2, sticky="w")
-    f1.grid(row=1, column=0, columnspan=2, sticky="w")
-    f2.grid(row=2, column=0, columnspan=2, sticky="w")
-    f3.grid(row=3, column=0, columnspan=2, sticky="w")
+    monochromeRadio.grid(row=1, column=0, columnspan=2, sticky="w")
+    sepiaRadio.grid(row=2, column=0, columnspan=2, sticky="w")
+    bloomRadio.grid(row=3, column=0, columnspan=2, sticky="w")
+    
     cancelButton.grid(row=4, column=0)
     applyButton.grid(row=4, column=1)
     
