@@ -36,15 +36,15 @@
 	# GPIO.output(TRIG_PIN,GPIO.HIGH)
 	# time.sleep(0.00001)
 	# GPIO.output(TRIG_PIN,GPIO.LOW)
-	
+
 	# while GPIO.input(ECHO_PIN) == 0:
 		# pulse_send = time.time()
-	
+
 	# while GPIO.input(ECHO_PIN) == 1:
 		# pulse_received = time.time()
-	
+
 	# distance = ((pulse_received-pulse_send) * 34300) / 2
-	# return distance 
+	# return distance
 
 # num = get_distance()
 
@@ -67,10 +67,9 @@ imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
 imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
 
 # Load the original image (for resizing)
-imageSrc = imageManip("../Image/test.jpg")
+currentImage = imageManip("../Image/test.jpg")
 initial_width, initial_height = 640, 360
-current_image = imageSrc.image_PIL.resize((initial_width, initial_height))  # Initial size
-display_image = ImageTk.PhotoImage(current_image)
+display_image = ImageTk.PhotoImage(currentImage.image_PIL.resize((initial_width, initial_height)))
 
 image_display = tk.Label(master=imageFrame, image=display_image)
 image_display.pack()
@@ -123,46 +122,65 @@ cameraModeLabel = tk.Label(master=mainwindow, text="Camera Mode:")
 # Function to open the filter window
 
 def update_display_image():
-    processed_image = imageSrc.get_image_PIL()
-    image_display.config(image=processed_image)
-    image_display.image = processed_image
+    processed_image = currentImage.image_PIL
+
+    new_width, new_height = 640, 360
+    resized_image = processed_image.resize((new_width, new_height))
+
+    new_display_image = ImageTk.PhotoImage(resized_image)
+
+    # Update the image displayed on the Tkinter Label widget
+    image_display.config(image=new_display_image)
+
+    # Keep a reference to the image object (important for Tkinter)
+    image_display.image = new_display_image
     
+    currentImage.save()
+
+
 def openFilters():
     filterWindow = tk.Tk()
+    filterWindow.title("Select Filter")
     
-    filterVar = tk.IntVar(value=0)  # Variable for filter selection (default is None)
+    global filterVar
+    filterVar = tk.IntVar() 
     
-    def cancel():
+    def applyFilter():
+        print(filterVar.get())
+        print("applyFilter() called")
+        if(filterVar.get() == 1):
+            print("applyMonochrome() called")
+            currentImage.applyMonochrome()
+        elif(filterVar.get() == 2):
+            print("applySepia() called")
+            currentImage.applySepia()
+        elif(filterVar.get() == 3):
+            print("applyBloom() called")
+            currentImage.applyBloom()
+        else:
+            print("No filter function called.")
+        
+        update_display_image()
         filterWindow.destroy()
         
-    def apply():
-        if filterVar.get() == 1:
-            imageSrc.applyMonochrome()
-        elif filterVar.get() == 2:
-            imageSrc.applySepia()
-        elif filterVar.get() == 3:
-            imageSrc.applyBloom()
-        
-        update_display_image()  
-        filterWindow.destroy() 
-    
+    def cancel():
+        filterWindow.destroy()
+
     cancelButton = tk.Button(master=filterWindow, text="Cancel", command=cancel)
-    applyButton = tk.Button(master=filterWindow, text="Apply", command=apply)
-    
+    applyButton = tk.Button(master=filterWindow, text="Apply", command=applyFilter)
+
     # Filter options
-    noneRadio = tk.Radiobutton(master=filterWindow, text="None", variable=filterVar, value=0)
-    monochromeRadio = tk.Radiobutton(master=filterWindow, text="Monochrome", variable=filterVar, value=1)
-    sepiaRadio = tk.Radiobutton(master=filterWindow, text="Sepia", variable=filterVar, value=2)
-    bloomRadio = tk.Radiobutton(master=filterWindow, text="Bloom", variable=filterVar, value=3)
-    
-    noneRadio.grid(row=0, column=0, columnspan=2, sticky="w")
-    monochromeRadio.grid(row=1, column=0, columnspan=2, sticky="w")
-    sepiaRadio.grid(row=2, column=0, columnspan=2, sticky="w")
-    bloomRadio.grid(row=3, column=0, columnspan=2, sticky="w")
-    
+    monochrome_radio = tk.Radiobutton(filterWindow, text="Monochrome", variable=filterVar, value=1)
+    sepia_radio = tk.Radiobutton(filterWindow, text="Sepia", variable=filterVar, value=2)
+    bloom_radio = tk.Radiobutton(filterWindow, text="Bloom", variable=filterVar, value=3)
+
+    monochrome_radio.grid(row=1, column=0, columnspan=2, sticky="w")
+    sepia_radio.grid(row=2, column=0, columnspan=2, sticky="w")
+    bloom_radio.grid(row=3, column=0, columnspan=2, sticky="w")
+
     cancelButton.grid(row=4, column=0)
     applyButton.grid(row=4, column=1)
-    
+
     filterWindow.mainloop()
 
 filterButton = tk.Button(master=mainwindow, text="Filter", command=openFilters)
@@ -229,7 +247,7 @@ def close():
 closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 
 # Layout Management
-    
+
 def packMain():
     image_display.pack()
 
