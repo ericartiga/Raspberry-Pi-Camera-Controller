@@ -71,11 +71,10 @@ currentImage = imageManip("../Image/test.jpg")
 initial_width, initial_height = 640, 360
 display_image = ImageTk.PhotoImage(currentImage.image_PIL.resize((initial_width, initial_height)))
 
-image_display = tk.Label(master=imageFrame, image=display_image)
-image_display.pack()
+image_display = tk.Label(master=imageFrame, image=display_image)    
 
 # Camera Name Label
-cameraName = tk.Label(master=mainwindow, text="Camera: Sony A6000")
+cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
 
 # Shutter Speed Controls
 shutterSpeed = 0
@@ -169,9 +168,9 @@ def openFilters():
     applyButton = tk.Button(master=filterWindow, text="Apply", command=applyFilter)
 
     # Filter options
-    radio1 = tk.Radiobutton(master=filterWindow, text="Option 1", variable=filterVar, value=1)
-    radio2 = tk.Radiobutton(master=filterWindow, text="Option 2", variable=filterVar, value=2)
-    radio3 = tk.Radiobutton(master=filterWindow, text="Option 3", variable=filterVar, value=3)
+    radio1 = tk.Radiobutton(master=filterWindow, text="Monochrome", variable=filterVar, value=1)
+    radio2 = tk.Radiobutton(master=filterWindow, text="Sepia", variable=filterVar, value=2)
+    radio3 = tk.Radiobutton(master=filterWindow, text="Bloom", variable=filterVar, value=3)
 
     radio1.grid(row=1, column=0, columnspan=2, sticky="w")
     radio2.grid(row=2, column=0, columnspan=2, sticky="w")
@@ -249,21 +248,25 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 
 def packMain():
     image_display.pack()
-
+    filterWindow.title("Remote Control Interface: " + cameraName)
+    
     cameraName.grid(row=0, column=11, columnspan=2)
-
-    shutterSpeedEntry.grid(row=2, column=11, columnspan=2)
+    
+    #Shutter Speed label
     shutterSpeedLabel.grid(row=1, column=11, columnspan=2)
+    shutterSpeedEntry.grid(row=2, column=11, columnspan=2)
     shutterSpeedSet.grid(row=2, column=13)
+    
+    ##Iso Label
+    isoLabel.grid(row=3, column=11, columnspan=2)
+    isoEntry.grid(row=4, column=11, columnspan=2)
+    isoSet.grid(row=4, column=13)
 
+    ##Auto and Manual
     autoRadio.grid(row=6, column=11)
     manualRadio.grid(row=6, column=12)
     cameraModeLabel.grid(row=5, column=11, columnspan=2)
     cameraModeSet.grid(row=6, column=13)
-
-    isoLabel.grid(row=3, column=11, columnspan=2)
-    isoEntry.grid(row=4, column=11, columnspan=2)
-    isoSet.grid(row=4, column=13)
 
     imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
 
