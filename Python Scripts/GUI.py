@@ -76,6 +76,15 @@ image_display = tk.Label(master=imageFrame, image=display_image)
 # Camera Name Label
 cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
 
+# Camera Battery Label
+
+def updateBatteryLabel():
+    battery_life = currentCamera.Camera.get_battery_life()
+    cameraBattery.config(text=f"Battery: {battery_life}%")
+    mainwindow.after(10000, update_battery_life)
+
+cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
+
 # Shutter Speed Controls
 shutterSpeed = 0
 def setShutterSpeed():
@@ -248,9 +257,10 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 
 def packMain():
     image_display.pack()
-    mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_name())
+    mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_manufacturer())
     
     cameraName.grid(row=0, column=11, columnspan=2)
+    cameraBattery.grid(row = 1, column=13, columnspan=5)
     
     #Shutter Speed label
     shutterSpeedLabel.grid(row=1, column=11, columnspan=2)
@@ -303,6 +313,7 @@ def forgetManual():
 
 # Pack the main window
 packMain()
+packManual()
 
 # Run the application
 mainwindow.mainloop()
