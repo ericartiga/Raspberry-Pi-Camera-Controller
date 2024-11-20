@@ -19,15 +19,16 @@ class imageManip:
 		
 	def applyMonochrome(self):
 		self.image_PIL = self.image_PIL.convert('L')
-		self.image_CV = self.image_PIL.copy()
+		self.image_CV = np.array(self.image_PIL)
 		
 	def applySepia(self):
-		width, height = self.image_PIL.size
-		pixels = self.image_PIL.load()
+		image = self.original_image.copy()
+		width, height = image.size
+		pixels = image.load()
 
 		for py in range(height):
 			for px in range(width):
-				r, g, b = self.image_PIL.getpixel((px, py))
+				r, g, b = image.getpixel((px, py))
 
 				tr = int(0.393 * r + 0.769 * g + 0.189 * b)
 				tg = int(0.349 * r + 0.686 * g + 0.168 * b)
@@ -44,38 +45,28 @@ class imageManip:
 
 				pixels[px, py] = (tr,tg,tb)
 				
+		self.image_PIL = image
 		self.image_CV = np.array(self.image_PIL)
 	
 	def applyBloom(self, thresh_value=245, blur_value=50, gain=6):
 
-		# Convert image to hsv colorspace as floats
-		hsv = cv2.cvtColor(self.image_CV, cv2.COLOR_BGR2HSV).astype(np.float64)
-		h, s, v = cv2.split(hsv)
+		thresh = cv2.threshold(self.image_CV, thresh_value, 255, cv2.THRESH_BINARY)[1]
 
-		# Desired low saturation and high brightness for white
-		# So invert saturation and multiply with brightness
-		sv = ((255 - s) * v / 255).clip(0, 255).astype(np.uint8)
-
-		# Apply threshold
-		thresh = cv2.threshold(sv, thresh_value, 255, cv2.THRESH_BINARY)[1]
-
-		# Apply Gaussian blur
 		blur = cv2.GaussianBlur(thresh, (0, 0), sigmaX=blur_value, sigmaY=blur_value)
-		blur = cv2.cvtColor(blur, cv2.COLOR_GRAY2BGR)
 
-		# Blend the blur with the original image using the gain
 		result = cv2.addWeighted(self.image_CV, 1, blur, gain, 0)
-
-		# Save the output image
+		
 		self.image_PIL = Image.fromarray(result)
 		self.image_CV = result
 	
 	def save(self):
-		self.image_PIL.save("../Image/testoutput.jpg")
+		self.image_PIL.save("../Image/testforsure.jpg")
+		
+		
 
-image = imageManip("/home/admin/Desktop/Raspberry-Pi-Camera-Controller/Image/test.jpg")
-image.applyBloom()
-image.save()
+
+
+
 
 
 
