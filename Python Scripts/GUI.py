@@ -109,6 +109,23 @@ isoEntry = tk.Entry(master=mainwindow)
 isoLabel = tk.Label(master=mainwindow, text="ISO:")
 isoSet = tk.Button(master=mainwindow, text="Set", command=setISO)
 
+# Aperture Controls
+aperture = ""
+def setAperture():
+    global aperture
+    aperture = str("1/" + apertureEntry.get())
+    currentCamera.set_aperture(aperture)
+    apertureLabel.config(text="Aperture: 1 / " + aperture)
+
+apertureEntry = tk.Entry(master=mainwindow)
+apertureLabel = tk.Label(master=mainwindow, text="Aperture: 1 / ")
+apertureSet = tk.Button(master=mainwindow, text="Set", command=setAperture)
+
+def setControlValues():
+    setAperture()
+    setISO()
+    setShutterSpeed()
+
 # Camera Mode Controls
 cameraMode = tk.IntVar(value=1)
 def setCameraMode():
@@ -256,7 +273,12 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 # Layout Management
 
 def packMain():
-    image_display.pack()
+    
+    for i in range(44):
+        mainwindow.rowconfigure(i, weight=1, minsize=80)
+    for i in range(16):
+        mainwindow.columnconfigure(i, weight=1, minsize=185)
+        
     mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_manufacturer())
     
     cameraName.grid(row=0, column=11, columnspan=2)
@@ -277,9 +299,12 @@ def packMain():
     manualRadio.grid(row=6, column=12)
     cameraModeLabel.grid(row=5, column=11, columnspan=2)
     cameraModeSet.grid(row=6, column=13)
-
+    
+    ##Imagr packing
+    image_display.pack()
     imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
-
+    
+    ##Buttons
     filterButton.grid(row=20, column=0)
     resetButton.grid(row=20, column=1)
     showFileButton.grid(row=20, column=2)
