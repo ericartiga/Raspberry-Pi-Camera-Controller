@@ -139,11 +139,10 @@ def update_display_image():
 
 
 def openFilters():
-    filterWindow = tk.Tk()
+    filterWindow = tk.Toplevel(master=mainwindow)
     filterWindow.title("Select Filter")
     
-    global filterVar
-    filterVar = tk.IntVar() 
+    filterVar = tk.IntVar(value=0) 
     
     def applyFilter():
         print(filterVar.get())
@@ -170,13 +169,13 @@ def openFilters():
     applyButton = tk.Button(master=filterWindow, text="Apply", command=applyFilter)
 
     # Filter options
-    monochrome_radio = tk.Radiobutton(filterWindow, text="Monochrome", variable=filterVar, value=1)
-    sepia_radio = tk.Radiobutton(filterWindow, text="Sepia", variable=filterVar, value=2)
-    bloom_radio = tk.Radiobutton(filterWindow, text="Bloom", variable=filterVar, value=3)
+    radio1 = tk.Radiobutton(master=filterWindow, text="Option 1", variable=filterVar, value=1)
+    radio2 = tk.Radiobutton(master=filterWindow, text="Option 2", variable=filterVar, value=2)
+    radio3 = tk.Radiobutton(master=filterWindow, text="Option 3", variable=filterVar, value=3)
 
-    monochrome_radio.grid(row=1, column=0, columnspan=2, sticky="w")
-    sepia_radio.grid(row=2, column=0, columnspan=2, sticky="w")
-    bloom_radio.grid(row=3, column=0, columnspan=2, sticky="w")
+    radio1.grid(row=1, column=0, columnspan=2, sticky="w")
+    radio2.grid(row=2, column=0, columnspan=2, sticky="w")
+    radio3.grid(row=3, column=0, columnspan=2, sticky="w")
 
     cancelButton.grid(row=4, column=0)
     applyButton.grid(row=4, column=1)
