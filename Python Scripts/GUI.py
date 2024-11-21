@@ -59,12 +59,11 @@ from camera import Camera
 
 # Main window setup
 mainwindow = tk.Tk()
-currentCamera = Camera()
+#currentCamera = Camera()
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
                       highlightbackground="white", highlightthickness=10)
-imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
 
 # Load the original image (for resizing)
 currentImage = imageManip("../Image/test.jpg")
@@ -74,7 +73,8 @@ display_image = ImageTk.PhotoImage(currentImage.image_PIL.resize((initial_width,
 image_display = tk.Label(master=imageFrame, image=display_image)    
 
 # Camera Name Label
-cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
+# ~ cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
+cameraName = tk.Label(master=mainwindow, text="Test")
 
 # Camera Battery Label
 
@@ -83,18 +83,19 @@ def updateBatteryLabel():
     cameraBattery.config(text=f"Battery: {battery_life}%")
     mainwindow.after(10000, update_battery_life)
 
-cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
+# ~ cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
+cameraBattery = tk.Label(master=mainwindow, text=("Battery: "))
 
 # Shutter Speed Controls
 shutterSpeed = 0
 def setShutterSpeed():
     global shutterSpeed
-    shutterSpeed = int(shutterSpeedEntry.get())
+    shutterSpeed = str("1/" +shutterSpeedEntry.get())
     currentCamera.set_shutter(shutterSpeed)
     shutterSpeedLabel.config(text="Shutter Speed: " + str(shutterSpeed))
 
 shutterSpeedEntry = tk.Entry(master=mainwindow)
-shutterSpeedLabel = tk.Label(master=mainwindow, text="Shutter Speed:")
+shutterSpeedLabel = tk.Label(master=mainwindow, text="Shutter Speed: ")
 shutterSpeedSet = tk.Button(master=mainwindow, text="Set", command=setShutterSpeed)
 
 # ISO Controls
@@ -106,25 +107,20 @@ def setISO():
     isoLabel.config(text="ISO: " + str(iso))
 
 isoEntry = tk.Entry(master=mainwindow)
-isoLabel = tk.Label(master=mainwindow, text="ISO:")
+isoLabel = tk.Label(master=mainwindow, text="ISO: ")
 isoSet = tk.Button(master=mainwindow, text="Set", command=setISO)
 
 # Aperture Controls
-aperture = ""
+aperture = 0
 def setAperture():
     global aperture
-    aperture = str("1/" + apertureEntry.get())
+    aperture = int("1/" + apertureEntry.get())
     currentCamera.set_aperture(aperture)
-    apertureLabel.config(text="Aperture: 1 / " + aperture)
+    apertureLabel.config(text="Aperture: " + aperture)
 
 apertureEntry = tk.Entry(master=mainwindow)
-apertureLabel = tk.Label(master=mainwindow, text="Aperture: 1 / ")
+apertureLabel = tk.Label(master=mainwindow, text="Aperture: ")
 apertureSet = tk.Button(master=mainwindow, text="Set", command=setAperture)
-
-def setControlValues():
-    setAperture()
-    setISO()
-    setShutterSpeed()
 
 # Camera Mode Controls
 cameraMode = tk.IntVar(value=1)
@@ -142,6 +138,12 @@ cameraModeSet = tk.Button(master=mainwindow, text="Set", command=setCameraMode)
 autoRadio = tk.Radiobutton(master=mainwindow, text="Auto", variable=cameraMode, value=0)
 manualRadio = tk.Radiobutton(master=mainwindow, text="Manual", variable=cameraMode, value=1)
 cameraModeLabel = tk.Label(master=mainwindow, text="Camera Mode:")
+
+def setControlValues():
+    setAperture()
+    setISO()
+    setShutterSpeed()
+    setCameraMode()
 
 # Filter Controls
 # Function to open the filter window
@@ -225,7 +227,7 @@ resetButton = tk.Button(master=mainwindow, text="Reset", command=reset)
 
 # Show file location
 def showFile():
-    subprocess.Popen(["open", "/Users/ericartiga/Documents/CMPT_2200/project"])
+    subprocess.Popen(["open", "../Image/"])
 
 showFileButton = tk.Button(master=mainwindow, text="Show File Location", command=showFile)
 
@@ -274,15 +276,21 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 
 def packMain():
     
-    for i in range(44):
-        mainwindow.rowconfigure(i, weight=1, minsize=80)
+    for i in range(34):
+        mainwindow.rowconfigure(i, weight=1, minsize=20)
     for i in range(16):
-        mainwindow.columnconfigure(i, weight=1, minsize=185)
+        mainwindow.columnconfigure(i, weight=1, minsize=20)
         
-    mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_manufacturer())
+    # ~ mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_manufacturer())
+    mainwindow.title("Remote Control Interface: ")
     
     cameraName.grid(row=0, column=11, columnspan=2)
     cameraBattery.grid(row = 1, column=13, columnspan=5)
+    
+    #Aperture Speed label
+    apertureLabel.grid(row=1, column=11, columnspan=2)
+    apertureEntry.grid(row=2, column=11, columnspan=2)
+    apertureSet.grid(row=2, column=13)
     
     #Shutter Speed label
     shutterSpeedLabel.grid(row=1, column=11, columnspan=2)
