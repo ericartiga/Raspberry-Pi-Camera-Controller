@@ -71,6 +71,7 @@ otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "bei
 infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=392,pady=10)
 
 # Load the original image (for resizing)
+global currentImage
 currentImage = imageManip("./__pycache__/temp.jpg")
 initial_width, initial_height = 640, 360
 display_image = ImageTk.PhotoImage(currentImage.image_PIL.resize((initial_width, initial_height)))
@@ -82,6 +83,8 @@ cameraName = tk.Label(master=infoFrame, text=currentCamera.get_camera_name(), bg
 # ~ cameraName = tk.Label(master=infoFrame, text="Test", bg="black", fg="white")
 
 # Camera Battery Label
+def test():
+    return
 
 def updateBatteryLabel():
     battery_life = currentCamera.Camera.get_battery_life()
@@ -91,46 +94,43 @@ def updateBatteryLabel():
 cameraBattery = tk.Label(master=infoFrame, text=("Battery: " + currentCamera.get_battery_life()), bg="black", fg="white")
 # ~ cameraBattery = tk.Label(master=infoFrame, text=("Battery: "), bg="black", fg="white")
 
-def test():
-    return
-    
-# Shutter Speed Controls
-shutterSpeed = 0
+shutterSpeed = str(currentCamera.get_shutter())
 def setShutterSpeed():
-    global shutterSpeed
-    shutterSpeed = str("1/" +shutterSpeedEntry.get())
+    shutterSpeed = str(shutterSpeedEntry.get())
     currentCamera.set_shutter(shutterSpeed)
-    shutterSpeedLabel.config(text="Shutter Speed: " + str(shutterSpeed))
+    shutterSpeedLabel.config(text="Shutter Speed: " +shutterSpeed)
 
 shutterSpeedEntry = tk.Entry(master=controlFrame)
-shutterSpeedLabel = tk.Label(master=controlFrame, text="Shutter Speed: ", padx=10,pady=10, bg="beige")
+shutterSpeedEntry.insert(0, shutterSpeed)
+shutterSpeedLabel = tk.Label(master=controlFrame, text="Shutter Speed: " + shutterSpeed, padx=10,pady=10, bg="beige")
 shutterSpeedIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
 shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
                           
 # ISO Controls
-iso = 0 
+iso = str(currentCamera.get_iso())
+
 def setISO():
-    global iso
     iso = str(isoEntry.get())
     currentCamera.set_iso(iso)
     isoLabel.config(text="ISO: " + str(iso))
 
 isoEntry = tk.Entry(master=controlFrame)
-isoLabel = tk.Label(master=controlFrame, text="ISO: ", padx=10,pady=5, bg="beige")
+isoEntry.insert(0, iso)
+isoLabel = tk.Label(master=controlFrame, text="ISO: " + iso, padx=10,pady=5, bg="beige")
 isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
 isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
 
 
 # Aperture Controls
-aperture = 0
+aperture = str(currentCamera.get_aperture())
 def setAperture():
-    global aperture
     aperture = str(apertureEntry.get())
     currentCamera.set_aperture(aperture)
     apertureLabel.config(text="Aperture: " + aperture)
 
 apertureEntry = tk.Entry(master=controlFrame)
-apertureLabel = tk.Label(master=controlFrame, text="Aperture: ", padx=10,pady=5, bg="beige")
+apertureEntry.insert(0, aperture)
+apertureLabel = tk.Label(master=controlFrame, text="Aperture: " + aperture, padx=10,pady=5, bg="beige")
 apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
 apertureDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
                           
@@ -156,11 +156,9 @@ def setControlValues():
     setAperture()
     setISO()
     setShutterSpeed()
-
 controlSet = tk.Button(master=controlFrame, text="Set", command=setControlValues, padx=50,pady=15, bg="#FEB112")
-# Filter Controls
-# Function to open the filter window
 
+## GUI OPERATION ##
 def update_display_image():
     processed_image = currentImage.image_PIL
 
@@ -174,10 +172,20 @@ def update_display_image():
 
     # Keep a reference to the image object (important for Tkinter)
     image_display.image = new_display_image
-    
-    currentImage.save()
 
 
+# Camera operation
+def takePhoto():
+    currentCamera.take_photo()
+    currentImage.updateImage("__pycache__/temp.jpg")
+    update_display_image()
+photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
+
+def autofocus():
+    pass
+focusButton = tk.Button(master=mainwindow, text="Focus", command=autofocus, padx = 40, pady = 40)
+
+### Camera Processing ###
 def openFilters():
     filterWindow = tk.Toplevel(master=mainwindow)
     filterWindow.title("Select Filter")
@@ -224,10 +232,10 @@ def openFilters():
 
 filterButton = tk.Button(master=otherFrame, text="Filter", command=openFilters, padx=10,pady=10,bg="pink")
     
+### File manipulation Processing ###
 def resetImage():
     currentImage.image_PIL = currentImage.original_image
     update_display_image()
-
 resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, padx=10,pady=10,bg="#FEB112")
 
 # Show file location
@@ -258,21 +266,9 @@ photoDistanceLabel = tk.Label(master=mainwindow, text="Take Photo After Distance
 photoDistanceLabelMin = tk.Label(master=mainwindow, text="Min: ")
 photoDistanceLabelMax = tk.Label(master=mainwindow, text="Max: ")
 photoDistanceMaxEntry = tk.Entry(master=mainwindow)
+photoDistanceMaxEntry = tk.Entry(master=mainwindow)
 photoDistanceMinEntry = tk.Entry(master=mainwindow)
 photoDistanceSet = tk.Button(master=mainwindow, text="Set", command=setPhotoDistance)
-
-# Take photo Button
-def takePhoto():
-    currentCamera.take_photo()
-    currentImage.image_PIL = Image.open("./__pycache__/temp.jpg")
-    update_display_image()
-
-photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
-
-def focus():
-    pass
-
-focusButton = tk.Button(master=mainwindow, text="Focus", command=focus, padx = 40, pady = 40)
 
 # Close Button
 def close():
@@ -293,7 +289,7 @@ def packMain():
     for i in range(18):
         mainwindow.columnconfigure(i, weight=1, minsize=5)  
 
-    mainwindow.title("Remote Control Interface: ")
+    mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_name())
     
     # Image packing
     image_display.grid(row=0, column=0, columnspan=11, rowspan=11)
