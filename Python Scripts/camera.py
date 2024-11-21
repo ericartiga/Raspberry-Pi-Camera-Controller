@@ -1,4 +1,5 @@
 import gphoto2 as gp
+import time
 
 #Camera Class
 class Camera:
@@ -25,6 +26,14 @@ class Camera:
 	def get_battery_life(self):
 		config = self.camera.get_config()
 		return config.get_child_by_name('batterylevel').get_value()
+	
+	def get_camera_name(self):
+		config = self.camera.get_config()
+		return str(config.get_child_by_name('cameramodel').get_value())
+	
+	def get_camera_manufacturer(self):
+		config = self.camera.get_config()
+		return str(config.get_child_by_name('manufacturer').get_value())
 	
 	def take_photo(self):
 		print("Taking photo")
@@ -130,12 +139,12 @@ class Camera:
 				print("White balance setting is not available or not writable.")
 		
 		except gp.GPhoto2Error as ex:
-			print(f"Error setting WHITE BALANCE: {ex}"
+			print(f"Error setting WHITE BALANCE: {ex}")
 			
 	def get_white_balance(self):
 		config = self.camera.get_config()
 		return config.get_child_by_name('f-number').get_value()
 	
-	
+
 	
 
