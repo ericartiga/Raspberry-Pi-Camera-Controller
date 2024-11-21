@@ -68,6 +68,7 @@ imageFrame = tk.Frame(master=mainwindow, borderwidth=30,
 controlFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=10,pady=10, highlightthickness=2)
 modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
+infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=426,pady=10)
 
 # Load the original image (for resizing)
 currentImage = imageManip("../Image/test.jpg")
@@ -78,7 +79,7 @@ image_display = tk.Label(master=imageFrame, image=display_image)
 
 # Camera Name Label
 # ~ cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
-cameraName = tk.Label(master=mainwindow, text="Test")
+cameraName = tk.Label(master=infoFrame, text="Test", bg="black", fg="white")
 
 # Camera Battery Label
 
@@ -88,7 +89,7 @@ def updateBatteryLabel():
     mainwindow.after(10000, update_battery_life)
 
 # ~ cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
-cameraBattery = tk.Label(master=mainwindow, text=("Battery: "))
+cameraBattery = tk.Label(master=infoFrame, text=("Battery: "), bg="black", fg="white")
 
 def test():
     return
@@ -240,7 +241,7 @@ def resetImage():
     currentImage.image_PIL = currentImage.original_image
     update_display_image()
 
-resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, padx=10,pady=10,bg="red")
+resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, padx=10,pady=10,bg="#FEB112")
 
 # Show file location
 def showFile():
@@ -279,6 +280,11 @@ def takePhoto():
 
 photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
 
+def focus():
+    pass
+
+focusButton = tk.Button(master=mainwindow, text="Focus", command=focus, padx = 40, pady = 40)
+
 # Close Button
 def close():
     try:
@@ -287,7 +293,7 @@ def close():
         pass
     mainwindow.destroy()
 
-closeButton = tk.Button(master=mainwindow, text="Close", command=close)
+closeButton = tk.Button(master=otherFrame, text="Close", command=close,padx=10,pady=10,bg="red")
 
 # Layout Management
 
@@ -306,12 +312,12 @@ def packMain():
     #Frame
     imageFrame.grid(row=1, column=0, sticky="nsew", columnspan=11, rowspan=11)
     controlFrame.grid(row=1, column=12, columnspan=2, rowspan=2)
-    modeFrame.grid(row=3, column=12, columnspan=2, rowspan=3)
+    modeFrame.grid(row=6, column=12, columnspan=2, rowspan=5)
     otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
-
+    infoFrame.grid(row = 30, columnspan=18)
     # Camera name and battery labels
-    cameraName.grid(row=18, column=10, columnspan=2)
-    cameraBattery.grid(row=18, column=13, columnspan=2)
+    cameraName.grid(row=0, column=1, columnspan=2)
+    cameraBattery.grid(row=0, column=20, columnspan=2)
 
     # Aperture Speed label
     apertureLabel.grid(row=1, column=3, columnspan=2)
@@ -343,10 +349,11 @@ def packMain():
     # Control Buttons
     filterButton.grid(row=4, column=1, columnspan=1, rowspan=2)
     resetButton.grid(row=4, column=2, columnspan=1, rowspan=2)
-    showFileButton.grid(row=4, column=10, columnspan=2, rowspan=2)
+    closeButton.grid(row=4, column=3, columnspan=1, rowspan=2)
+    showFileButton.grid(row=9, column=1, columnspan=3)
     
     photoButton.grid(row=13, column = 12, rowspan=3, columnspan=4)
-    # ~ closeButton.grid(row=7, column=12)
+    
 
 def packManual():
     timerLabel.grid(row=21, column=1)
