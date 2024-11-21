@@ -59,11 +59,15 @@ from camera import Camera
 
 # Main window setup
 mainwindow = tk.Tk()
+mainwindow.config(bg="#E4A6D5", relief="sunken", borderwidth=2)
 #currentCamera = Camera()
 
 # Create a Frame for the image
-imageFrame = tk.Frame(master=mainwindow, relief=tk.RIDGE, borderwidth=10,
-                      highlightbackground="white", highlightthickness=10)
+imageFrame = tk.Frame(master=mainwindow, borderwidth=30, 
+                      highlightbackground="black", highlightthickness=2, bg = "white", padx=10,pady=10)
+controlFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=10,pady=10, highlightthickness=2)
+modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
+otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 
 # Load the original image (for resizing)
 currentImage = imageManip("../Image/test.jpg")
@@ -86,58 +90,66 @@ def updateBatteryLabel():
 # ~ cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
 cameraBattery = tk.Label(master=mainwindow, text=("Battery: "))
 
+def test():
+    return
+    
 # Shutter Speed Controls
 shutterSpeed = 0
-def setShutterSpeed():
+def setShutterSpeed(value):
     global shutterSpeed
     shutterSpeed = str("1/" +shutterSpeedEntry.get())
     currentCamera.set_shutter(shutterSpeed)
     shutterSpeedLabel.config(text="Shutter Speed: " + str(shutterSpeed))
 
-shutterSpeedEntry = tk.Entry(master=mainwindow)
-shutterSpeedLabel = tk.Label(master=mainwindow, text="Shutter Speed: ")
-shutterSpeedSet = tk.Button(master=mainwindow, text="Set", command=setShutterSpeed)
-
+shutterSpeedEntry = tk.Entry(master=controlFrame)
+shutterSpeedLabel = tk.Label(master=controlFrame, text="Shutter Speed: ", padx=10,pady=10, bg="beige")
+shutterSpeedIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
+shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+                          
 # ISO Controls
-iso = 0
-def setISO():
+iso = 0 
+def setISO(value):
     global iso
     iso = int(isoEntry.get())
     currentCamera.set_iso(iso)
     isoLabel.config(text="ISO: " + str(iso))
 
-isoEntry = tk.Entry(master=mainwindow)
-isoLabel = tk.Label(master=mainwindow, text="ISO: ")
-isoSet = tk.Button(master=mainwindow, text="Set", command=setISO)
+isoEntry = tk.Entry(master=controlFrame)
+isoLabel = tk.Label(master=controlFrame, text="ISO: ", padx=10,pady=5, bg="beige")
+isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
+isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+
 
 # Aperture Controls
 aperture = 0
-def setAperture():
+def setAperture(value):
     global aperture
     aperture = int("1/" + apertureEntry.get())
     currentCamera.set_aperture(aperture)
     apertureLabel.config(text="Aperture: " + aperture)
 
-apertureEntry = tk.Entry(master=mainwindow)
-apertureLabel = tk.Label(master=mainwindow, text="Aperture: ")
-apertureSet = tk.Button(master=mainwindow, text="Set", command=setAperture)
-
+apertureEntry = tk.Entry(master=controlFrame)
+apertureLabel = tk.Label(master=controlFrame, text="Aperture: ", padx=10,pady=5, bg="beige")
+apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
+apertureDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+                          
 # Camera Mode Controls
+    
 cameraMode = tk.IntVar(value=1)
 def setCameraMode():
     if cameraMode.get() == 0:
-        cameraModeLabel.config(text="Camera Mode: Auto")
+        cameraModeLabel.config(text="Mode: Auto")
         currentCamera.set_camera_mode("AF-A")
         forgetManual()
     elif cameraMode.get() == 1:
-        cameraModeLabel.config(text="Camera Mode: Manual")
+        cameraModeLabel.config(text="Mode: Manual")
         currentCamera.set_camera_mode("Manual")
         packManual()
 
-cameraModeSet = tk.Button(master=mainwindow, text="Set", command=setCameraMode)
-autoRadio = tk.Radiobutton(master=mainwindow, text="Auto", variable=cameraMode, value=0)
-manualRadio = tk.Radiobutton(master=mainwindow, text="Manual", variable=cameraMode, value=1)
-cameraModeLabel = tk.Label(master=mainwindow, text="Camera Mode:")
+cameraModeSet = tk.Button(master=modeFrame, text="Set", command=setCameraMode, padx=50, pady=5, bg="#FEB112")
+autoRadio = tk.Radiobutton(master=modeFrame, text="Auto", variable=cameraMode, value=0, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
+manualRadio = tk.Radiobutton(master=modeFrame, text="Manual", variable=cameraMode, value=1, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
+cameraModeLabel = tk.Label(master=modeFrame, text="Mode:", padx=10,pady=10, bg="beige")
 
 def setControlValues():
     setAperture()
@@ -145,6 +157,7 @@ def setControlValues():
     setShutterSpeed()
     setCameraMode()
 
+controlSet = tk.Button(master=controlFrame, text="Set", command=setControlValues, padx=50,pady=15, bg="#FEB112")
 # Filter Controls
 # Function to open the filter window
 
@@ -209,27 +222,31 @@ def openFilters():
 
     filterWindow.mainloop()
 
-filterButton = tk.Button(master=mainwindow, text="Filter", command=openFilters)
+filterButton = tk.Button(master=otherFrame, text="Filter", command=openFilters, padx=10,pady=10,bg="pink")
 
 # Reset Controls
-def reset():
-    global shutterSpeed, iso
-    filterVar.set(0)
-    cameraMode.set(1)
-    shutterSpeed = 0
-    iso = 0
-    isoLabel.config(text="ISO: ")
-    shutterSpeedLabel.config(text="Shutter Speed: ")
-    cameraModeLabel.config(text="Camera Mode: ")
-    packManual()
+# ~ def reset():
+    # ~ global shutterSpeed, iso
+    # ~ filterVar.set(0)
+    # ~ cameraMode.set(1)
+    # ~ shutterSpeed = 0
+    # ~ iso = 0
+    # ~ isoLabel.config(text="ISO: ")
+    # ~ shutterSpeedLabel.config(text="Shutter Speed: ")
+    # ~ cameraModeLabel.config(text="Camera Mode: ")
+    # ~ packManual()
+    
+def resetImage():
+    currentImage.image_PIL = currentImage.original_image
+    update_display_image()
 
-resetButton = tk.Button(master=mainwindow, text="Reset", command=reset)
+resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, padx=10,pady=10,bg="red")
 
 # Show file location
 def showFile():
     subprocess.Popen(["open", "../Image/"])
 
-showFileButton = tk.Button(master=mainwindow, text="Show File Location", command=showFile)
+showFileButton = tk.Button(master=otherFrame, text="Show File Location", command=showFile, padx=10,pady=10,bg="lightgrey")
 
 # Timer Controls
 timer = 0
@@ -257,10 +274,10 @@ photoDistanceMinEntry = tk.Entry(master=mainwindow)
 photoDistanceSet = tk.Button(master=mainwindow, text="Set", command=setPhotoDistance)
 
 # Start Button
-def start():
+def takePhoto():
     pass
 
-startButton = tk.Button(master=mainwindow, text="Start", command=start)
+photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
 
 # Close Button
 def close():
@@ -275,50 +292,61 @@ closeButton = tk.Button(master=mainwindow, text="Close", command=close)
 # Layout Management
 
 def packMain():
-    
-    for i in range(34):
-        mainwindow.rowconfigure(i, weight=1, minsize=20)
-    for i in range(16):
-        mainwindow.columnconfigure(i, weight=1, minsize=20)
-        
-    # ~ mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_manufacturer())
+    for i in range(30):
+        mainwindow.rowconfigure(i, weight=0, minsize=5)  
+
+    for i in range(18):
+        mainwindow.columnconfigure(i, weight=1, minsize=5)  
+
     mainwindow.title("Remote Control Interface: ")
     
-    cameraName.grid(row=0, column=11, columnspan=2)
-    cameraBattery.grid(row = 1, column=13, columnspan=5)
+    # Image packing
+    image_display.grid(row=0, column=0, columnspan=11, rowspan=11)
     
-    #Aperture Speed label
-    apertureLabel.grid(row=1, column=11, columnspan=2)
-    apertureEntry.grid(row=2, column=11, columnspan=2)
-    apertureSet.grid(row=2, column=13)
-    
-    #Shutter Speed label
-    shutterSpeedLabel.grid(row=1, column=11, columnspan=2)
-    shutterSpeedEntry.grid(row=2, column=11, columnspan=2)
-    shutterSpeedSet.grid(row=2, column=13)
-    
-    ##Iso Label
-    isoLabel.grid(row=3, column=11, columnspan=2)
-    isoEntry.grid(row=4, column=11, columnspan=2)
-    isoSet.grid(row=4, column=13)
+    #Frame
+    imageFrame.grid(row=1, column=0, sticky="nsew", columnspan=11, rowspan=11)
+    controlFrame.grid(row=1, column=12, columnspan=2, rowspan=2)
+    modeFrame.grid(row=3, column=12, columnspan=2, rowspan=3)
+    otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
 
-    ##Auto and Manual
-    autoRadio.grid(row=6, column=11)
-    manualRadio.grid(row=6, column=12)
-    cameraModeLabel.grid(row=5, column=11, columnspan=2)
-    cameraModeSet.grid(row=6, column=13)
-    
-    ##Imagr packing
-    image_display.pack()
-    imageFrame.grid(row=0, column=0, rowspan=20, columnspan=10)
-    
-    ##Buttons
-    filterButton.grid(row=20, column=0)
-    resetButton.grid(row=20, column=1)
-    showFileButton.grid(row=20, column=2)
+    # Camera name and battery labels
+    cameraName.grid(row=18, column=10, columnspan=2)
+    cameraBattery.grid(row=18, column=13, columnspan=2)
 
-    startButton.grid(row=7, column=11)
-    closeButton.grid(row=7, column=12)
+    # Aperture Speed label
+    apertureLabel.grid(row=1, column=3, columnspan=2)
+    apertureEntry.grid(row=2, column=3, columnspan=2)
+    apertureIncrement.grid(row=3, column=4)
+    apertureDecrement.grid(row=3, column=3)
+
+    # Shutter Speed label
+    shutterSpeedLabel.grid(row=4, column=3, columnspan=2)
+    shutterSpeedEntry.grid(row=5, column=3, columnspan=2)
+    shutterSpeedIncrement.grid(row=6, column=4)
+    shutterSpeedDecrement.grid(row=6, column=3)
+
+    # ISO Label
+    isoLabel.grid(row=7, column=3, columnspan=2)
+    isoEntry.grid(row=8, column=3, columnspan=2)
+    isoIncrement.grid(row=9, column=4)
+    isoDecrement.grid(row=9, column=3)
+
+    # Set button
+    controlSet.grid(row=10, column=3, columnspan=2)
+
+    # Camera Mode
+    cameraModeLabel.grid(row=1, column=3, columnspan=2)
+    autoRadio.grid(row=2, column=3)
+    manualRadio.grid(row=2, column=4)
+    cameraModeSet.grid(row=3, column=3, columnspan=2, rowspan=2)
+
+    # Control Buttons
+    filterButton.grid(row=4, column=1, columnspan=1, rowspan=2)
+    resetButton.grid(row=4, column=2, columnspan=1, rowspan=2)
+    showFileButton.grid(row=4, column=10, columnspan=2, rowspan=2)
+    
+    photoButton.grid(row=13, column = 12, rowspan=3, columnspan=4)
+    # ~ closeButton.grid(row=7, column=12)
 
 def packManual():
     timerLabel.grid(row=21, column=1)
@@ -346,7 +374,7 @@ def forgetManual():
 
 # Pack the main window
 packMain()
-packManual()
+
 
 # Run the application
 mainwindow.mainloop()
