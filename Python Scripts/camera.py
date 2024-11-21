@@ -5,9 +5,9 @@ import time
 class Camera:
 	def __init__(self):
 		self.camera = None
-		self.initalize_camera()
+		self.initialize_camera()
 		
-	def initalize_camera(self):
+	def initialize_camera(self):
 		while True:
 			try:
 				print("Please set your camera to PC-remote.")
@@ -38,8 +38,10 @@ class Camera:
 	def take_photo(self):
 		print("Taking photo")
 		file_path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
-		target = f"./{file_path.name}"
+		target = "./__pycache__/temp.jpg"
 		self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL).save(target)
+		self.exit()
+		self.initialize_camera()
 		
 	def exit(self):
 		if self.camera:
@@ -113,7 +115,7 @@ class Camera:
 			
 			aperture_node = config.get_child_by_name("f-number")
 
-			# Check if the aperture node is writable
+			# Check if the aperture node is working properly
 			if aperture_node:
 				aperture_node.set_value(str(value))
 				self.camera.set_config(config)
@@ -146,5 +148,4 @@ class Camera:
 		return config.get_child_by_name('f-number').get_value()
 	
 
-	
 
