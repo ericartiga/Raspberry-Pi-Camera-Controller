@@ -96,7 +96,7 @@ def test():
     
 # Shutter Speed Controls
 shutterSpeed = 0
-def setShutterSpeed(value):
+def setShutterSpeed():
     global shutterSpeed
     shutterSpeed = str("1/" +shutterSpeedEntry.get())
     currentCamera.set_shutter(shutterSpeed)
