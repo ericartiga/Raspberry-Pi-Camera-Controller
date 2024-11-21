@@ -60,7 +60,7 @@ from camera import Camera
 # Main window setup
 mainwindow = tk.Tk()
 mainwindow.config(bg="#E4A6D5", relief="sunken", borderwidth=2)
-#currentCamera = Camera()
+currentCamera = Camera()
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, borderwidth=30, 
@@ -68,18 +68,18 @@ imageFrame = tk.Frame(master=mainwindow, borderwidth=30,
 controlFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=10,pady=10, highlightthickness=2)
 modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
-infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=426,pady=10)
+infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=392,pady=10)
 
 # Load the original image (for resizing)
-currentImage = imageManip("../Image/test.jpg")
+currentImage = imageManip("./__pycache__/temp.jpg")
 initial_width, initial_height = 640, 360
 display_image = ImageTk.PhotoImage(currentImage.image_PIL.resize((initial_width, initial_height)))
 
 image_display = tk.Label(master=imageFrame, image=display_image)    
 
 # Camera Name Label
-# ~ cameraName = tk.Label(master=mainwindow, text=currentCamera.get_camera_name())
-cameraName = tk.Label(master=infoFrame, text="Test", bg="black", fg="white")
+cameraName = tk.Label(master=infoFrame, text=currentCamera.get_camera_name(), bg="black", fg="white")
+# ~ cameraName = tk.Label(master=infoFrame, text="Test", bg="black", fg="white")
 
 # Camera Battery Label
 
@@ -88,8 +88,8 @@ def updateBatteryLabel():
     cameraBattery.config(text=f"Battery: {battery_life}%")
     mainwindow.after(10000, update_battery_life)
 
-# ~ cameraBattery = tk.Label(master=mainwindow, text=("Battery: " + currentCamera.get_battery_life()))
-cameraBattery = tk.Label(master=infoFrame, text=("Battery: "), bg="black", fg="white")
+cameraBattery = tk.Label(master=infoFrame, text=("Battery: " + currentCamera.get_battery_life()), bg="black", fg="white")
+# ~ cameraBattery = tk.Label(master=infoFrame, text=("Battery: "), bg="black", fg="white")
 
 def test():
     return
@@ -109,9 +109,9 @@ shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2,
                           
 # ISO Controls
 iso = 0 
-def setISO(value):
+def setISO():
     global iso
-    iso = int(isoEntry.get())
+    iso = str(isoEntry.get())
     currentCamera.set_iso(iso)
     isoLabel.config(text="ISO: " + str(iso))
 
@@ -123,9 +123,9 @@ isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="ligh
 
 # Aperture Controls
 aperture = 0
-def setAperture(value):
+def setAperture():
     global aperture
-    aperture = int("1/" + apertureEntry.get())
+    aperture = str(apertureEntry.get())
     currentCamera.set_aperture(aperture)
     apertureLabel.config(text="Aperture: " + aperture)
 
@@ -156,7 +156,6 @@ def setControlValues():
     setAperture()
     setISO()
     setShutterSpeed()
-    setCameraMode()
 
 controlSet = tk.Button(master=controlFrame, text="Set", command=setControlValues, padx=50,pady=15, bg="#FEB112")
 # Filter Controls
@@ -224,18 +223,6 @@ def openFilters():
     filterWindow.mainloop()
 
 filterButton = tk.Button(master=otherFrame, text="Filter", command=openFilters, padx=10,pady=10,bg="pink")
-
-# Reset Controls
-# ~ def reset():
-    # ~ global shutterSpeed, iso
-    # ~ filterVar.set(0)
-    # ~ cameraMode.set(1)
-    # ~ shutterSpeed = 0
-    # ~ iso = 0
-    # ~ isoLabel.config(text="ISO: ")
-    # ~ shutterSpeedLabel.config(text="Shutter Speed: ")
-    # ~ cameraModeLabel.config(text="Camera Mode: ")
-    # ~ packManual()
     
 def resetImage():
     currentImage.image_PIL = currentImage.original_image
@@ -244,10 +231,10 @@ def resetImage():
 resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, padx=10,pady=10,bg="#FEB112")
 
 # Show file location
-def showFile():
+def savetoFile():
     subprocess.Popen(["open", "../Image/"])
 
-showFileButton = tk.Button(master=otherFrame, text="Show File Location", command=showFile, padx=10,pady=10,bg="lightgrey")
+saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
 
 # Timer Controls
 timer = 0
@@ -274,9 +261,11 @@ photoDistanceMaxEntry = tk.Entry(master=mainwindow)
 photoDistanceMinEntry = tk.Entry(master=mainwindow)
 photoDistanceSet = tk.Button(master=mainwindow, text="Set", command=setPhotoDistance)
 
-# Start Button
+# Take photo Button
 def takePhoto():
-    pass
+    currentCamera.take_photo()
+    currentImage.image_PIL = Image.open("./__pycache__/temp.jpg")
+    update_display_image()
 
 photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
 
@@ -315,9 +304,10 @@ def packMain():
     modeFrame.grid(row=6, column=12, columnspan=2, rowspan=5)
     otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
     infoFrame.grid(row = 30, columnspan=18)
+    
     # Camera name and battery labels
-    cameraName.grid(row=0, column=1, columnspan=2)
-    cameraBattery.grid(row=0, column=20, columnspan=2)
+    cameraName.grid(row=0, column=0, columnspan=2)
+    cameraBattery.grid(row=0, column=2, columnspan=2)
 
     # Aperture Speed label
     apertureLabel.grid(row=1, column=3, columnspan=2)
@@ -350,7 +340,7 @@ def packMain():
     filterButton.grid(row=4, column=1, columnspan=1, rowspan=2)
     resetButton.grid(row=4, column=2, columnspan=1, rowspan=2)
     closeButton.grid(row=4, column=3, columnspan=1, rowspan=2)
-    showFileButton.grid(row=9, column=1, columnspan=3)
+    saveFileButton.grid(row=9, column=1, columnspan=3)
     
     photoButton.grid(row=13, column = 12, rowspan=3, columnspan=4)
     
