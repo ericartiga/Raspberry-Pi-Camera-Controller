@@ -43,7 +43,7 @@ import threading
 
 # Main window setup
 mainwindow = tk.Tk()
-mainwindow.config(bg="#E4A6D5", relief="sunken", borderwidth=2)
+mainwindow.config(bg="#E4A6D5", relief="sunken", borderwidth=2, highlightbackground="black", highlightthickness=2,)
 mainwindow.resizable(False, False)
 mainwindow.geometry("940x728")
 
@@ -57,7 +57,6 @@ modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beig
 otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=392,pady=10)
 manualFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=20,pady=30, highlightthickness=2)
-autoFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 featureFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=22,pady=15, highlightthickness=2)
 
 # Load the original image (for resizing)
@@ -278,21 +277,7 @@ def savetoFile():
     subprocess.Popen(["open", "../Image/"])
 
 saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
-# def get_distance(): #cm
-	# GPIO.output(TRIG_PIN,GPIO.HIGH)
-	# time.sleep(0.00001)
-	# GPIO.output(TRIG_PIN,GPIO.LOW)
 
-	# while GPIO.input(ECHO_PIN) == 0:
-		# pulse_send = time.time()
-
-	# while GPIO.input(ECHO_PIN) == 1:
-		# pulse_received = time.time()
-
-	# distance = ((pulse_received-pulse_send) * 34300) / 2
-	# return distance
-
-# num = get_distance()
 # Photo Distance Controls
 def getSubjectDistance():
     print("Getting the subject distance...")
@@ -326,6 +311,28 @@ def getSubjectDistance():
 SubjectDistanceLabel = tk.Label(master=manualFrame, text="Focus Guideline: Unknown", bg="beige")
 startRangingLabel = tk.Button(master=manualFrame, text="Get the subject distance!", command=getSubjectDistance, padx=10,pady=10)
 
+
+distanceEntryAllowed = False
+def toggleDistance():
+    global distanceEntryAllowed
+    if distanceEntryAllowed == True:
+        distanceEntryAllowed = False
+        distanceEntry.config(state='disabled')
+        distanceEntry.delete(0, 'end')
+    elif distanceEntryAllowed == False:
+        distanceEntryAllowed = True
+        distanceEntry.config(state='normal')
+        distanceEntry.delete(0, 'end')
+        distanceEntry.insert(0, 1.8)
+        
+distanceLabel = tk.Label(master=featureFrame, text="Take photo at: ", bg="beige")      
+ToggleDistancePhoto = tk.Button(master=featureFrame, text="Toggle", command=toggleDistance)
+distanceEntry = tk.Entry(master=featureFrame, justify='center', width=7)
+distanceEntry.insert(0, 1.8)
+distanceEntry.config(state='disabled')
+def takePhotoAtDistance(distance):
+    print("Take photo at: " + distance)
+    
 # Layout Management
 # Close Button
 def close():
@@ -357,13 +364,17 @@ def packMain():
     modeFrame.grid(row=6, column=12, columnspan=2, rowspan=5)
     otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
     infoFrame.grid(row = 30, columnspan=18)
-    featureFrame.grid(row=14, column = 0, columnspan=1, rowspan=2)
+    featureFrame.grid(row=14, column = 0, columnspan=1, rowspan=6)
     
     ##timer label
     timerLabel.grid(row=0, column=0, columnspan=2)
     timerEntry.grid(row=1, column=0, columnspan=2)
-    timerIncreButton.grid(row=0, column=5)
-    timerDecreButton.grid(row=1,column=5)
+    timerIncreButton.grid(row=0, column=2)
+    timerDecreButton.grid(row=1,column=2)
+    distanceLabel.grid(row=4, column=0, columnspan=2)
+    distanceEntry.grid(row=4, column=2, columnspan=2, rowspan=2)
+    ToggleDistancePhoto.grid(row=5, column=0, columnspan=2)
+    
     # ~ timerSet.grid(row=0, column=4, columnspan=2)
     
     # Camera name and battery labels
@@ -407,16 +418,13 @@ def packMain():
     
 
 def packManual():
-    autoFrame.grid_forget()
     focusButton.grid_forget()
     manualFrame.grid(row=14, column = 4, columnspan=1, rowspan=2)
-    SubjectDistanceLabel.grid()
-    startRangingLabel.grid()
+    SubjectDistanceLabel.grid(row = 0, column = 0)
+    startRangingLabel.grid(row = 1, column = 0)
 
-    
 def packAuto():
     manualFrame.grid_forget()
-    autoFrame.grid(row = 18, column = 3, columnspan=5)
     focusButton.grid(row=19, column = 12, rowspan=3, columnspan=4)
 
 # Pack the main window
