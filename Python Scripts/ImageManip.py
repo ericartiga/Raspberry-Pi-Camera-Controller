@@ -17,6 +17,13 @@ class imageManip:
 	# Do the image processing for CV
 	# Update image pil using copy
 		
+		
+	def updateImage(self, image_path: str):
+		self.image_PIL = Image.open(image_path)
+		self.image_CV = np.array(self.image_PIL)
+		self.original_image = self.image_PIL.copy()
+		self.original_image_CV = self.image_CV.copy() 
+		
 	def applyMonochrome(self):
 		self.image_PIL = self.image_PIL.convert('L')
 		self.image_CV = np.array(self.image_PIL)
