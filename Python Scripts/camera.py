@@ -58,6 +58,9 @@ class Camera:
 			
 			autofocus_node.set_value(1)
 			self.camera.set_config(config)
+			time.sleep(1)
+			autofocus_node.set_value(0)
+			self.camera.set_config(config)
 			
 		
 	def exit(self):
@@ -66,14 +69,14 @@ class Camera:
 	
 	def get_camera_mode(self):
 		config = self.camera.get_config()
-
+		autofocus_node = config.get_child_by_name("autofocus")
 		focus_mode = config.get_child_by_name("focusmode").get_value()
 		if focus_mode == "Manual":
 			return 0
 		else:
 			return 1
 			
-	def set_camera_mode(self, mode): #"AF-A" or "Manual"
+	def set_camera_mode(self, mode): #"AF-S" or "Manual". other are "AF-A" or "AF-C"
 		try:
 			# Get the camera configuration
 			config = self.camera.get_config()
