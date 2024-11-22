@@ -5,9 +5,9 @@ import time
 class Camera:
 	def __init__(self):
 		self.camera = None
-		self.initalize_camera()
+		self.initialize_camera()
 		
-	def initalize_camera(self):
+	def initialize_camera(self):
 		while True:
 			try:
 				print("Please set your camera to PC-remote.")
@@ -38,13 +38,41 @@ class Camera:
 	def take_photo(self):
 		print("Taking photo")
 		file_path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
-		target = f"./{file_path.name}"
+		target = "./__pycache__/temp.jpg"
 		self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL).save(target)
+		self.exit()
+		self.initialize_camera()
+		
+	def focus_camera(self):
+		
+		print("Focusing camera")
+		config = self.camera.get_config()
+		if(config.get_child_by_name('focusmode').get_value() == "Manual"):
+			print("Unable to autofocus. Camera is in manual mode.")
+			return 
+		autofocus_node = config.get_child_by_name("autofocus")
+		
+		if autofocus_node:
+			autofocus_node.set_value(0)
+			self.camera.set_config(config)
+			
+			autofocus_node.set_value(1)
+			self.camera.set_config(config)
+			
 		
 	def exit(self):
 		if self.camera:
 			self.camera.exit()
 	
+	def get_camera_mode(self):
+		config = self.camera.get_config()
+
+		focus_mode = config.get_child_by_name("focusmode").get_value()
+		if focus_mode == "Manual":
+			return 0
+		else:
+			return 1
+			
 	def set_camera_mode(self, mode): #"AF-A" or "Manual"
 		try:
 			# Get the camera configuration
@@ -113,7 +141,7 @@ class Camera:
 			
 			aperture_node = config.get_child_by_name("f-number")
 
-			# Check if the aperture node is writable
+			# Check if the aperture node is working properly
 			if aperture_node:
 				aperture_node.set_value(str(value))
 				self.camera.set_config(config)
@@ -143,8 +171,5 @@ class Camera:
 			
 	def get_white_balance(self):
 		config = self.camera.get_config()
-		return config.get_child_by_name('f-number').get_value()
-	
 
-	
 
