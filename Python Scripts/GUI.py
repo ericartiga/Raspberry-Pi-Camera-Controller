@@ -30,10 +30,8 @@ def detect_buttons(callbacks):
             if GPIO.input(pin) == GPIO.LOW:
                 print(label + " pressed.")
                 callbacks[label]()
-                time.sleep(0.5)
+                time.sleep(0.5)S
         time.sleep(0.1)
-
-
 
 # #PIN for Buzzer
 
