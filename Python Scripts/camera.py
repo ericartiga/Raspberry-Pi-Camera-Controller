@@ -58,6 +58,9 @@ class Camera:
 			
 			autofocus_node.set_value(1)
 			self.camera.set_config(config)
+			time.sleep(1)
+			autofocus_node.set_value(0)
+			self.camera.set_config(config)
 			
 		
 	def exit(self):
@@ -66,7 +69,7 @@ class Camera:
 	
 	def get_camera_mode(self):
 		config = self.camera.get_config()
-
+		autofocus_node = config.get_child_by_name("autofocus")
 		focus_mode = config.get_child_by_name("focusmode").get_value()
 		if focus_mode == "Manual":
 			return 0
