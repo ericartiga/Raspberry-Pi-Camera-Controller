@@ -4,6 +4,7 @@
 
 import time
 import RPi.GPIO as GPIO
+from threading import Thread
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -17,19 +18,41 @@ GPIO.output(TRIG_PIN,GPIO.LOW)
 print("waiting for ultrasonic sensor to initialize")
 time.sleep(2)
 
-# #PIN for 7 Segment LED
+#PIN for Buttons
+BUTTONS = {27: "Yellow Button", 22: "Green Button"}
+for pins in BUTTONS:
+    GPIO.setup(pins, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# #PIN for Buttons
-# BLUE_BUTTON = 22
-# BLACK_BUTTON = 17
-# GPIO.setup(BLUE_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(BLACK_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+##background process to detect button. Further setup below!
+def detect_buttons(callbacks):
+    while True:
+        for pin, label in BUTTONS.items():
+            if GPIO.input(pin) == GPIO.LOW:
+                print(label + " pressed.")
+                callbacks[label]()
+                time.sleep(0.5)
+        time.sleep(0.1)
+
+
 
 # #PIN for Buzzer
 
 # #PIN for LEDs
+GREEN_PIN = 4
+GPIO.setup(GREEN_PIN, GPIO.OUT)
+GPIO.output(GREEN_PIN, GPIO.LOW)
 
+RED_PIN = 17
+GPIO.setup(RED_PIN, GPIO.OUT)
+GPIO.output(RED_PIN, GPIO.LOW)
 
+def led(PIN_NUM):
+    GPIO.output(PIN_NUM, GPIO.HIGH)
+    print("hIGH")
+    time.sleep(0.5)
+    GPIO.output(PIN_NUM, GPIO.LOW)
+    print("low")
+    time.sleep(0.5)
 ##
 #GUI Codes
 ##
@@ -40,7 +63,6 @@ import subprocess
 from ImageManip import imageManip
 from camera import Camera
 import sys
-import threading
 
 # Main window setup
 mainwindow = tk.Tk()
@@ -275,14 +297,17 @@ def takePhoto():
     countdown = int(timerEntry.get())
     if countdown != 0:
         for i in range(countdown):
-            time.sleep(1)
-            print(i)
+            led(GREEN_PIN)
+            print(i+1)
+    GPIO.output(RED_PIN, GPIO.HIGH)
     currentCamera.take_photo()
     currentImage.updateImage("__pycache__/temp.jpg")
     update_display_image()
+    GPIO.output(RED_PIN, GPIO.LOW)
         
 photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx = 40, pady = 40)
 
+#literally autofocus
 def autofocus():
     currentCamera.focus_camera()
 
@@ -382,7 +407,7 @@ def getSubjectDistance():
 SubjectDistanceLabel = tk.Label(master=manualFrame, text="Focus Guideline: Unknown", bg="beige")
 startRangingLabel = tk.Button(master=manualFrame, text="Get the subject distance!", command=getSubjectDistance, padx=10,pady=10)
 
-
+##Toggle the distance entry box. When off takepHoto skip. When on takephoto activate the ranging method
 distanceEntryAllowed = False
 def toggleDistance():
     global distanceEntryAllowed
@@ -402,7 +427,7 @@ distanceEntry = tk.Entry(master=featureFrame, justify='center', width=7)
 distanceEntry.insert(0, 1.8)
 distanceEntry.config(state='disabled')
 
-        
+## le start distance ranging
 def startDistanceRanging(distance): 
     start_time = time.time()
     while True:
@@ -423,8 +448,17 @@ def close():
     mainwindow.destroy()
     sys.exit()
 closeButton = tk.Button(master=otherFrame, text="Close", command=close,padx=10,pady=10,bg="red")
-    
+
+##Edit this to add new button and their linked function!
+callbacks = {"Yellow Button": autofocus, "Green Button": takePhoto}
+
 def packMain():
+    
+    ##GPIO THREAD##
+    GPIO_THREAD = Thread(target=detect_buttons, args=(callbacks,), daemon=True)
+    GPIO_THREAD.start()
+    
+    ##setting up
     for i in range(30):
         mainwindow.rowconfigure(i, weight=1, minsize=5)  
 
