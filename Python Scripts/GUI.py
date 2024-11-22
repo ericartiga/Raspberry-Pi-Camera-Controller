@@ -34,6 +34,7 @@ time.sleep(2)
 #GUI Codes
 ##
 import tkinter as tk
+from tkinter import filedialog
 from PIL import Image, ImageTk
 import subprocess
 from ImageManip import imageManip
@@ -342,6 +343,7 @@ resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, pad
 
 # Show file location
 def savetoFile():
+    currentImage.save()
     subprocess.Popen(["open", "../Image/"])
 
 saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
