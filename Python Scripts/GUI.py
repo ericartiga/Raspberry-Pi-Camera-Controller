@@ -39,6 +39,7 @@ import subprocess
 from ImageManip import imageManip
 from camera import Camera
 import sys
+import threading
 
 # Main window setup
 mainwindow = tk.Tk()
@@ -55,7 +56,7 @@ controlFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "b
 modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=392,pady=10)
-manualFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=20,pady=40, highlightthickness=2)
+manualFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=20,pady=30, highlightthickness=2)
 autoFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 featureFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=22,pady=15, highlightthickness=2)
 
@@ -277,12 +278,52 @@ def savetoFile():
     subprocess.Popen(["open", "../Image/"])
 
 saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
+# def get_distance(): #cm
+	# GPIO.output(TRIG_PIN,GPIO.HIGH)
+	# time.sleep(0.00001)
+	# GPIO.output(TRIG_PIN,GPIO.LOW)
 
+	# while GPIO.input(ECHO_PIN) == 0:
+		# pulse_send = time.time()
+
+	# while GPIO.input(ECHO_PIN) == 1:
+		# pulse_received = time.time()
+
+	# distance = ((pulse_received-pulse_send) * 34300) / 2
+	# return distance
+
+# num = get_distance()
 # Photo Distance Controls
 def getSubjectDistance():
     print("Getting the subject distance...")
-    return
-SubjectDistanceLabel = tk.Label(master=manualFrame, text="Subject Distance: Unknown", bg="beige")
+    GPIO.output(TRIG_PIN, GPIO.HIGH)
+    time.sleep(0.00001)  
+    GPIO.output(TRIG_PIN, GPIO.LOW)
+
+    pulse_send = 0
+    pulse_received = 0
+    start_time = time.time()  
+    timeout = 5  
+
+    while GPIO.input(ECHO_PIN) == 0:
+        pulse_send = time.time()
+        if time.time() - start_time > timeout:
+            print("Timeout: No subject detected.")
+            return None  
+
+    while GPIO.input(ECHO_PIN) == 1:
+        pulse_received = time.time()
+        if time.time() - start_time > timeout:
+            print("Timeout: No pulse detected.")
+            return None  
+
+    # Calculate the distance
+    distance = float(((pulse_received - pulse_send) * 34300) / 2) /100 # Speed of sound is 34300 cm/s
+    distance = round(distance, 1)
+    SubjectDistanceLabel.config(text="Focus Guideline: " + str(distance) +"m")
+    return distance
+    
+SubjectDistanceLabel = tk.Label(master=manualFrame, text="Focus Guideline: Unknown", bg="beige")
 startRangingLabel = tk.Button(master=manualFrame, text="Get the subject distance!", command=getSubjectDistance, padx=10,pady=10)
 
 # Layout Management
@@ -371,12 +412,7 @@ def packManual():
     manualFrame.grid(row=14, column = 4, columnspan=1, rowspan=2)
     SubjectDistanceLabel.grid()
     startRangingLabel.grid()
-    # ~ photoDistanceLabel.grid(row=22, column=0)
-    # ~ photoDistanceLabelMin.grid(row=22, column=1)
-    # ~ photoDistanceLabelMax.grid(row=22, column=3)
-    # ~ photoDistanceMaxEntry.grid(row=22, column=4)
-    # ~ photoDistanceMinEntry.grid(row=22, column=2)
-    # ~ photoDistanceSet.grid(row=22, column=5)
+
     
 def packAuto():
     manualFrame.grid_forget()
