@@ -29,6 +29,7 @@ class imageManip:
 		self.image_PIL = self.image_PIL.convert('L')
 		self.image_CV = np.array(self.image_PIL)
 		
+	##ApplySepia Code credited to geekrank
 	def applySepia(self):
 		image = self.original_image.copy()
 		width, height = image.size
@@ -56,6 +57,7 @@ class imageManip:
 		self.image_PIL = image
 		self.image_CV = np.array(self.image_PIL)
 	
+	##apply bloom. Code credited on README
 	def applyBloom(self, thresh_value=245, blur_value=50, gain=6):
 
 		thresh = cv2.threshold(self.image_CV, thresh_value, 255, cv2.THRESH_BINARY)[1]
