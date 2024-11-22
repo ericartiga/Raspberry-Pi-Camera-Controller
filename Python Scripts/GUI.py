@@ -34,6 +34,7 @@ time.sleep(2)
 #GUI Codes
 ##
 import tkinter as tk
+from tkinter import filedialog
 from PIL import Image, ImageTk
 import subprocess
 from ImageManip import imageManip
@@ -107,6 +108,68 @@ def updateBatteryLabel():
 cameraBattery = tk.Label(master=infoFrame, text=("Battery: " + currentCamera.get_battery_life()), bg="black", fg="white")
 # ~ cameraBattery = tk.Label(master=infoFrame, text=("Battery: "), bg="black", fg="white")
 
+##### INCREMENT DECREMENT IMPLEMENTATION ######
+
+def increment_aperture():
+    global aperture_index
+    aperture_values = ["f/1.8", "f/2.8", "f/4", "f/5.6", "f/8", "f/11", "f/16"]
+    if aperture_index + 1 < len(aperture_values):
+        aperture_index += 1
+        apertureEntry.delete(0, 'end')
+        apertureEntry.insert(0, str(aperture_values[aperture_index]))
+    else:
+        aperture_index = 6
+
+def decrement_aperture():
+    global aperture_index
+    aperture_values = ["f/1.8", "f/2.8", "f/4", "f/5.6", "f/8", "f/11", "f/16"]
+    if aperture_index - 1 >= 0:
+        aperture_index -= 1
+        apertureEntry.delete(0, 'end')
+        apertureEntry.insert(0, str(aperture_values[aperture_index]))
+    else:
+        aperture_index = 0
+        
+def increment_shutter_speed():
+    global shutterSpeed_index
+    shutter_speeds = ["1/15", "1/30", "1/60", "1/125", "1/250", "1/500", "1/1000"]
+    if shutterSpeed_index + 1 < len(shutter_speeds):
+        shutterSpeed_index += 1
+        shutterSpeedEntry.delete(0, 'end')
+        shutterSpeedEntry.insert(0, str(shutter_speeds[shutterSpeed_index]))
+    else:
+        shutterSpeed_index = 6
+
+def decrement_shutter_speed():
+    global shutterSpeed_index
+    shutter_speeds = ["1/15", "1/30", "1/60", "1/125", "1/250", "1/500", "1/1000"]
+    if shutterSpeed_index - 1 >= 0:
+        shutterSpeed_index -= 1
+        shutterSpeedEntry.delete(0, 'end')
+        shutterSpeedEntry.insert(0, str(shutter_speeds[shutterSpeed_index]))
+    else:
+        shutterSpeed_index = 0
+        
+def increment_iso():
+    global iso_index
+    iso_values = ["Auto ISO", 100, 200, 400, 800, 1600, 3200, 4000]
+    if iso_index + 1 < len(iso_values):
+        iso_index += 1
+        isoEntry.delete(0, 'end')
+        isoEntry.insert(0, str(iso_values[iso_index]))
+    else:
+        iso_index = 7
+
+def decrement_iso():
+    global iso_index
+    iso_values = ["Auto ISO", 100, 200, 400, 800, 1600, 3200, 4000]
+    if iso_index - 1 >= 0:
+        iso_index -= 1
+        isoEntry.delete(0, 'end')
+        isoEntry.insert(0, str(iso_values[iso_index]))
+    else:
+        iso_index = 0
+
 # Aperture Controls
 aperture = str(currentCamera.get_aperture())
 def setAperture():
@@ -115,12 +178,12 @@ def setAperture():
     apertureLabel.config(text="Aperture: " + aperture)
     apertureEntry.delete(0, 'end')
     apertureEntry.insert(0, aperture)
-
+aperture_index = 3
 apertureEntry = tk.Entry(master=controlFrame, justify='center')
 apertureEntry.insert(0, aperture)
 apertureLabel = tk.Label(master=controlFrame, text="Aperture: " + aperture, padx=10,pady=5, bg="beige")
-apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
-apertureDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_aperture)
+apertureDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = decrement_aperture)
 
 ##Shutterspeed control
 shutterSpeed = str(currentCamera.get_shutter())
@@ -130,12 +193,12 @@ def setShutterSpeed():
     shutterSpeedLabel.config(text="Shutter Speed: " +shutterSpeed)
     shutterSpeedEntry.delete(0, 'end')
     shutterSpeedEntry.insert(0, shutterSpeed)
-
+shutterSpeed_index = 3
 shutterSpeedEntry = tk.Entry(master=controlFrame, justify='center')
 shutterSpeedEntry.insert(0, shutterSpeed)
 shutterSpeedLabel = tk.Label(master=controlFrame, text="Shutter Speed: " + shutterSpeed, padx=10,pady=10, bg="beige")
-shutterSpeedIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
-shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+shutterSpeedIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_shutter_speed)
+shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = decrement_shutter_speed)
                           
 # ISO Controls
 iso = str(currentCamera.get_iso())
@@ -145,17 +208,16 @@ def setISO():
     isoLabel.config(text="ISO: " + iso)
     isoEntry.delete(0, 'end')
     isoEntry.insert(0, iso)
-
+iso_index = 3
 isoEntry = tk.Entry(master=controlFrame, justify='center')
 isoEntry.insert(0, iso)
 isoLabel = tk.Label(master=controlFrame, text="ISO: " + iso, padx=10,pady=5, bg="beige")
-isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
-isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_iso)
+isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = decrement_iso)
 
-##### INCREMENT DECREMENT IMPLEMENTATION ######
-                          
+
+    
 # Camera Mode Controls
-
 cameraMode = tk.IntVar(value=currentCamera.get_camera_mode())
 def convertToStr(num):
     if not num:
@@ -281,6 +343,7 @@ resetButton = tk.Button(master=otherFrame, text="Reset", command=resetImage, pad
 
 # Show file location
 def savetoFile():
+    currentImage.save()
     subprocess.Popen(["open", "../Image/"])
 
 saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
