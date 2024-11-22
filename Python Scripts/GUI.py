@@ -101,6 +101,7 @@ def test():
 def updateBatteryLabel():
     battery_life = currentCamera.Camera.get_battery_life()
     cameraBattery.config(text=f"Battery: {battery_life}%")
+    cameraBattery.update()
     mainwindow.after(10000, updateBatteryLabel)
 
 cameraBattery = tk.Label(master=infoFrame, text=("Battery: " + currentCamera.get_battery_life()), bg="black", fg="white")
@@ -150,6 +151,8 @@ isoEntry.insert(0, iso)
 isoLabel = tk.Label(master=controlFrame, text="ISO: " + iso, padx=10,pady=5, bg="beige")
 isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = test)
 isoDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = test)
+
+##### INCREMENT DECREMENT IMPLEMENTATION ######
                           
 # Camera Mode Controls
 
@@ -158,14 +161,14 @@ def convertToStr(num):
     if not num:
         return "Manual"
     else:
-        return "AF-A"
+        return "AF-S"
 def setCameraMode():
     if cameraMode.get() == currentCamera.get_camera_mode():
         print("Already in selected mode")
         return
     if cameraMode.get() == 1:
-        cameraModeLabel.config(text="Mode: Auto")
-        currentCamera.set_camera_mode("AF-A")
+        cameraModeLabel.config(text="Mode: AF-S")
+        currentCamera.set_camera_mode("Automatic")
         packAuto()
     elif cameraMode.get() == 0:
         cameraModeLabel.config(text="Mode: Manual")
@@ -203,6 +206,10 @@ def update_display_image():
 
 # Camera operation
 def takePhoto():
+    global distanceEntryAllowed
+    distance = float(distanceEntry.get())
+    if(distanceEntryAllowed == True):
+        startDistanceRanging(distance)
     countdown = int(timerEntry.get())
     if countdown != 0:
         for i in range(countdown):
@@ -306,6 +313,7 @@ def getSubjectDistance():
     distance = float(((pulse_received - pulse_send) * 34300) / 2) /100 # Speed of sound is 34300 cm/s
     distance = round(distance, 1)
     SubjectDistanceLabel.config(text="Focus Guideline: " + str(distance) +"m")
+    SubjectDistanceLabel.update()
     return distance
     
 SubjectDistanceLabel = tk.Label(master=manualFrame, text="Focus Guideline: Unknown", bg="beige")
@@ -330,8 +338,17 @@ ToggleDistancePhoto = tk.Button(master=featureFrame, text="Toggle", command=togg
 distanceEntry = tk.Entry(master=featureFrame, justify='center', width=7)
 distanceEntry.insert(0, 1.8)
 distanceEntry.config(state='disabled')
-def takePhotoAtDistance(distance):
-    print("Take photo at: " + distance)
+
+        
+def startDistanceRanging(distance): 
+    start_time = time.time()
+    while True:
+        elapsed_time = time.time() - start_time
+        current = getSubjectDistance()
+        print("You're at "+ str(current))
+        if distance < current or elapsed_time > 9:
+            return
+        time.sleep(2)
     
 # Layout Management
 # Close Button
@@ -364,7 +381,7 @@ def packMain():
     modeFrame.grid(row=6, column=12, columnspan=2, rowspan=5)
     otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
     infoFrame.grid(row = 30, columnspan=18)
-    featureFrame.grid(row=14, column = 0, columnspan=1, rowspan=6)
+    featureFrame.grid(row=14, column = 0, columnspan=2, rowspan=6)
     
     ##timer label
     timerLabel.grid(row=0, column=0, columnspan=2)
