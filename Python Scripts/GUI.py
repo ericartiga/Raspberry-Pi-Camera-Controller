@@ -30,7 +30,7 @@ def detect_buttons(callbacks):
             if GPIO.input(pin) == GPIO.LOW:
                 print(label + " pressed.")
                 callbacks[label]()
-                time.sleep(0.5)S
+                time.sleep(0.5)
         time.sleep(0.1)
 
 # #PIN for Buzzer
@@ -44,13 +44,26 @@ RED_PIN = 17
 GPIO.setup(RED_PIN, GPIO.OUT)
 GPIO.output(RED_PIN, GPIO.LOW)
 
-def led(PIN_NUM):
+YELLOW_PIN = 18
+GPIO.setup(YELLOW_PIN, GPIO.OUT)
+GPIO.output(YELLOW_PIN, GPIO.LOW)
+
+def led(PIN_NUM): #1s
     GPIO.output(PIN_NUM, GPIO.HIGH)
     print("hIGH")
     time.sleep(0.5)
     GPIO.output(PIN_NUM, GPIO.LOW)
     print("low")
     time.sleep(0.5)
+    
+def ledRapid(PIN_NUM): #3s
+    for i in range(3):
+        GPIO.output(PIN_NUM, GPIO.HIGH)
+        print("hIGH")
+        time.sleep(0.5)
+        GPIO.output(PIN_NUM, GPIO.LOW)
+        print("low")
+        time.sleep(0.5)
 ##
 #GUI Codes
 ##
@@ -307,7 +320,9 @@ photoButton = tk.Button(master=mainwindow, text="Snap!", command=takePhoto, padx
 
 #literally autofocus
 def autofocus():
+    GPIO.output(YELLOW_PIN, GPIO.HIGH)
     currentCamera.focus_camera()
+    GPIO.output(YELLOW_PIN, GPIO.LOW)
 
 focusButton = tk.Button(master=mainwindow, text="Focus", command=autofocus, padx = 60, pady = 10)
 
@@ -431,10 +446,12 @@ def startDistanceRanging(distance):
     while True:
         elapsed_time = time.time() - start_time
         current = getSubjectDistance()
+        led(YELLOW_PIN)
         print("You're at "+ str(current))
-        if distance < current or elapsed_time > 9:
+        if distance < current or elapsed_time > 10:
+            ledRapid(YELLOW_PIN)
             return
-        time.sleep(2)
+        time.sleep(1)
     
 # Layout Management
 # Close Button
