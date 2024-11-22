@@ -256,14 +256,14 @@ def convertToStr(num):
     if not num:
         return "Manual"
     else:
-        return "AF-S"
+        return "AF-A"
 def setCameraMode():
     if cameraMode.get() == currentCamera.get_camera_mode():
         print("Already in selected mode")
         return
     if cameraMode.get() == 1:
-        cameraModeLabel.config(text="Mode: AF-S")
-        currentCamera.set_camera_mode("Automatic")
+        cameraModeLabel.config(text="Mode: AF-A")
+        currentCamera.set_camera_mode("AF-A")
         packAuto()
     elif cameraMode.get() == 0:
         cameraModeLabel.config(text="Mode: Manual")
