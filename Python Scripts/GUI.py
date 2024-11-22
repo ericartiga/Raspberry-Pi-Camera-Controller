@@ -1,23 +1,21 @@
 # ##
 # #GPIO Codes
 # ##
-# import time
-# import RPi.GPIO as GPIO
 
-# # Set up GPIO
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setwarnings(False)
+import time
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
-# #PIN for Ultrasonic Distance Sensor
-# TRIG_PIN = 16
-# ECHO_PIN = 21
+TRIG_PIN = 16
+ECHO_PIN = 21
 
-# GPIO.setup(TRIG_PIN, GPIO.OUT)
-# GPIO.setup(ECHO_PIN, GPIO.IN)
+GPIO.setup(TRIG_PIN, GPIO.OUT)
+GPIO.setup(ECHO_PIN, GPIO.IN)
 
-# GPIO.output(TRIG_PIN,GPIO.LOW)
-# print("waiting for sensor to initialize")
-# time.sleep(2)
+GPIO.output(TRIG_PIN,GPIO.LOW)
+print("waiting for ultrasonic sensor to initialize")
+time.sleep(2)
 
 # #PIN for 7 Segment LED
 
@@ -31,22 +29,6 @@
 
 # #PIN for LEDs
 
-# #Auxilarry functions
-# def get_distance(): #cm
-	# GPIO.output(TRIG_PIN,GPIO.HIGH)
-	# time.sleep(0.00001)
-	# GPIO.output(TRIG_PIN,GPIO.LOW)
-
-	# while GPIO.input(ECHO_PIN) == 0:
-		# pulse_send = time.time()
-
-	# while GPIO.input(ECHO_PIN) == 1:
-		# pulse_received = time.time()
-
-	# distance = ((pulse_received-pulse_send) * 34300) / 2
-	# return distance
-
-# num = get_distance()
 
 ##
 #GUI Codes
@@ -57,7 +39,6 @@ import subprocess
 from ImageManip import imageManip
 from camera import Camera
 import sys
-import time
 
 # Main window setup
 mainwindow = tk.Tk()
@@ -74,7 +55,7 @@ controlFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "b
 modeFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 otherFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 infoFrame = tk.Frame(master=mainwindow,  bg = "black", padx=392,pady=10)
-manualFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
+manualFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=20,pady=40, highlightthickness=2)
 autoFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=25,pady=10, highlightthickness=2)
 featureFrame = tk.Frame(master=mainwindow, highlightbackground="black",  bg = "beige", padx=22,pady=15, highlightthickness=2)
 
@@ -185,13 +166,14 @@ def setCameraMode():
     if cameraMode.get() == 1:
         cameraModeLabel.config(text="Mode: Auto")
         currentCamera.set_camera_mode("AF-A")
-        forgetManual()
+        packAuto()
     elif cameraMode.get() == 0:
         cameraModeLabel.config(text="Mode: Manual")
         currentCamera.set_camera_mode("Manual")
         packManual()
         
-cameraModeLabel = tk.Label(master=modeFrame, text="Mode: " + convertToStr(cameraMode), padx=10,pady=10, bg="beige")
+        
+cameraModeLabel = tk.Label(master=modeFrame, text="Mode: " + convertToStr(cameraMode.get()), padx=10,pady=10, bg="beige")
 cameraModeSet = tk.Button(master=modeFrame, text="Set", command=setCameraMode, padx=50, pady=5, bg="#FEB112")
 autoRadio = tk.Radiobutton(master=modeFrame, text="Auto", variable=cameraMode, value=1, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
 manualRadio = tk.Radiobutton(master=modeFrame, text="Manual", variable=cameraMode, value=0, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
@@ -297,15 +279,11 @@ def savetoFile():
 saveFileButton = tk.Button(master=otherFrame, text="Save your Image!", command=savetoFile, padx=10,pady=10,bg="lightgreen")
 
 # Photo Distance Controls
-photoDistanceMax = 0
-photoDistanceMin = 0
-def setPhotoDistance():
-    global photoDistanceMax, photoDistanceMin
-    photoDistanceMin = int(photoDistanceMinEntry.get())
-    photoDistanceMax = int(photoDistanceMaxEntry.get())
-
-photoDistanceLabel = tk.Label(master=featureFrame, text="Take Photo After Distance")
-photoDistanceSet = tk.Button(master=mainwindow, text="Start Ranging", command=setPhotoDistance)
+def getSubjectDistance():
+    print("Getting the subject distance...")
+    return
+SubjectDistanceLabel = tk.Label(master=manualFrame, text="Subject Distance: Unknown", bg="beige")
+startRangingLabel = tk.Button(master=manualFrame, text="Get the subject distance!", command=getSubjectDistance, padx=10,pady=10)
 
 # Layout Management
 # Close Button
@@ -326,13 +304,12 @@ def packMain():
         mainwindow.columnconfigure(i, weight=1, minsize=5)  
     
     mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_name())
-    if currentCamera.get_camera_mode() == "Manual":
+    # Image packing
+    image_display.grid(row=0, column=0, columnspan=11, rowspan=11)
+    if(cameraMode.get() == 0):
         packManual()
     else:
         packAuto()
-    # Image packing
-    image_display.grid(row=0, column=0, columnspan=11, rowspan=11)
-    
     #Frame
     imageFrame.grid(row=1, column=0, sticky="nsew", columnspan=11, rowspan=11)
     controlFrame.grid(row=1, column=12, columnspan=2, rowspan=2)
@@ -386,13 +363,14 @@ def packMain():
     saveFileButton.grid(row=9, column=1, columnspan=3)
     
     photoButton.grid(row=15, column = 12, rowspan=3, columnspan=4)
-    focusButton.grid(row=19, column = 12, rowspan=3, columnspan=4)
+    
 
 def packManual():
-    manualFrame.grid(row = 18, column = 3, columnspan=5)
-    # ~ timerLabel.grid(row=21, column=1)
-    # ~ timerEntry.grid(row=21, column=2)
-    # ~ timerSet.grid(row=21, column=3)
+    autoFrame.grid_forget()
+    focusButton.grid_forget()
+    manualFrame.grid(row=14, column = 4, columnspan=1, rowspan=2)
+    SubjectDistanceLabel.grid()
+    startRangingLabel.grid()
     # ~ photoDistanceLabel.grid(row=22, column=0)
     # ~ photoDistanceLabelMin.grid(row=22, column=1)
     # ~ photoDistanceLabelMax.grid(row=22, column=3)
@@ -401,13 +379,12 @@ def packManual():
     # ~ photoDistanceSet.grid(row=22, column=5)
     
 def packAuto():
+    manualFrame.grid_forget()
     autoFrame.grid(row = 18, column = 3, columnspan=5)
-
+    focusButton.grid(row=19, column = 12, rowspan=3, columnspan=4)
 
 # Pack the main window
 packMain()
-packManual()
-
 
 # Run the application
 mainwindow.mainloop()
