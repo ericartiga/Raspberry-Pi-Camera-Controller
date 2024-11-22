@@ -1,6 +1,7 @@
 from PIL import Image, ImageFilter
 import cv2
 import numpy as np
+import time
 
 class imageManip:
 	def __init__(self, image_path: str):
@@ -67,7 +68,8 @@ class imageManip:
 		self.image_CV = result
 	
 	def save(self):
-		self.image_PIL.save("../Image/testforsure.jpg")
+		currenttime = round(time.time(), 2)
+		self.image_PIL.save(f"../Image/output{currenttime}.jpg")
 		
 		
 
