@@ -64,6 +64,17 @@ def ledRapid(PIN_NUM): #3s
         GPIO.output(PIN_NUM, GPIO.LOW)
         print("low")
         time.sleep(0.5)
+        
+def ledRapid(PIN_NUM1, PIN_NUM2): #3s
+    for i in range(3):
+        GPIO.output(PIN_NUM1, GPIO.HIGH)
+        GPIO.output(PIN_NUM2, GPIO.HIGH)
+        print("hIGH")
+        time.sleep(0.5)
+        GPIO.output(PIN_NUM1, GPIO.LOW)
+        GPIO.output(PIN_NUM2, GPIO.LOW)
+        print("low")
+        time.sleep(0.5)
 ##
 #GUI Codes
 ##
@@ -272,14 +283,14 @@ def convertToStr(num):
     if not num:
         return "Manual"
     else:
-        return "AF-A"
+        return "AF-S"
 def setCameraMode():
     if cameraMode.get() == currentCamera.get_camera_mode():
         print("Already in selected mode")
         return
     if cameraMode.get() == 1:
-        cameraModeLabel.config(text="Mode: AF-A")
-        currentCamera.set_camera_mode("AF-A")
+        cameraModeLabel.config(text="Mode: AF-S")
+        currentCamera.set_camera_mode("Automatic")
         packAuto()
     elif cameraMode.get() == 0:
         cameraModeLabel.config(text="Mode: Manual")
@@ -341,6 +352,11 @@ def autofocus():
     GPIO.output(YELLOW_PIN, GPIO.LOW)
 
 focusButton = tk.Button(master=mainwindow, text="Focus", command=autofocus, padx = 60, pady = 10)
+
+def lastresortinit():
+    global currentCamera
+    currentCamera = Camera()
+initButton = tk.Button(master=infoFrame, text="Init", command=lastresortinit, padx = 10, pady = 3)
 
 ### Camera Processing ###
 def openFilters():
@@ -465,7 +481,7 @@ def startDistanceRanging(distance):
         led(YELLOW_PIN)
         print("You're at "+ str(current))
         if distance < current or elapsed_time > 10:
-            ledRapid(YELLOW_PIN)
+            ledRapid(YELLOW_PIN, GREEN_PIN)
             return
         time.sleep(1)
     

@@ -1,5 +1,6 @@
 import gphoto2 as gp
 import time
+from threading import Thread
 
 #Camera Class
 class Camera:
@@ -36,7 +37,6 @@ class Camera:
 		return str(config.get_child_by_name('manufacturer').get_value())
 	
 	def take_photo(self):
-		print("Taking photo")
 		file_path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
 		target = "./__pycache__/temp.jpg"
 		self.camera.file_get(file_path.folder, file_path.name, gp.GP_FILE_TYPE_NORMAL).save(target)
@@ -55,7 +55,6 @@ class Camera:
 		if autofocus_node:
 			autofocus_node.set_value(0)
 			self.camera.set_config(config)
-			
 			autofocus_node.set_value(1)
 			self.camera.set_config(config)
 			time.sleep(1)
@@ -65,8 +64,10 @@ class Camera:
 		
 	def exit(self):
 		if self.camera:
+			print("Exiting camera")
 			self.camera.exit()
-	
+			self.camera = None
+
 	def get_camera_mode(self):
 		config = self.camera.get_config()
 		autofocus_node = config.get_child_by_name("autofocus")
