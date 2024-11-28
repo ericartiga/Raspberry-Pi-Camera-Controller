@@ -215,6 +215,20 @@ def decrement_iso():
         iso_index = 0
 
 # Aperture Controls
+maxAperture = 16
+def allowedAperture(S,P,d):
+    if len(P) < 2 and d == '0':
+        return False
+    elif len(P) > 2 and not S.isdigit():
+        return False
+    elif len(P) > 3 and int(P[2:]) > maxAperture:
+        shutterSpeedEntry.delete(2,'end')
+        shutterSpeedEntry.insert(2,str(maxAperture))
+        ShutterSpeedEntry.config(validate='key')
+        return False
+    else:
+        return True
+validationAperture = mainwindow.register(allowedAperture)
 aperture = str(currentCamera.get_aperture())
 def setAperture():
     currentCamera.set_aperture(str(apertureEntry.get()))
@@ -223,13 +237,27 @@ def setAperture():
     apertureEntry.delete(0, 'end')
     apertureEntry.insert(0, aperture)
 aperture_index = 3
-apertureEntry = tk.Entry(master=controlFrame, justify='center')
+apertureEntry = tk.Entry(master=controlFrame, justify='center', validate = "key", validatecommand = (validationAperture,"%S","%P","%d"))
 apertureEntry.insert(0, aperture)
 apertureLabel = tk.Label(master=controlFrame, text="Aperture: " + aperture, padx=10,pady=5, bg="beige")
 apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_aperture)
 apertureDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = decrement_aperture)
 
 ##Shutterspeed control
+maxShutterSpeed = 1000
+def allowedShutterSpeed(S,P,d):
+    if len(P) < 2 and d == '0':
+        return False
+    elif len(P) > 2 and not S.isdigit():
+        return False
+    elif len(P) > 3 and int(P[2:]) > maxShutterSpeed:
+        shutterSpeedEntry.delete(2,'end')
+        shutterSpeedEntry.insert(2,str(maxShutterSpeed))
+        shutterSpeedEntry.config(validate='key')
+        return False
+    else:
+        return True
+validationShutterSpeed = mainwindow.register(allowedShutterSpeed)
 shutterSpeed = str(currentCamera.get_shutter())
 def setShutterSpeed():
     currentCamera.set_shutter(shutterSpeedEntry.get())
@@ -238,28 +266,29 @@ def setShutterSpeed():
     shutterSpeedEntry.delete(0, 'end')
     shutterSpeedEntry.insert(0, shutterSpeed)
 shutterSpeed_index = 3
-shutterSpeedEntry = tk.Entry(master=controlFrame, justify='center')
+shutterSpeedEntry = tk.Entry(master=controlFrame, justify='center', validate = "key", validatecommand = (validationShutterSpeed,"%S","%P","%d"))
 shutterSpeedEntry.insert(0, shutterSpeed)
 shutterSpeedLabel = tk.Label(master=controlFrame, text="Shutter Speed: " + shutterSpeed, padx=10,pady=10, bg="beige")
 shutterSpeedIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_shutter_speed)
 shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2, bg="lightgrey", command = decrement_shutter_speed)
                           
 # ISO Controls
-
 ## possible solution for max input
-##maxAllowed = 10000
-##def maxInput(S,P):
-##    if not S.isdigit():
-##        return False
-##    try:
-##        if int(P) > maxAllowed:
-##            return False
-##        else:
-##            return True
-##    except:
-##        return True
-##validation = mainwindow.register(maxInput)
-
+maxISO = 4000
+def maxInput(S,P):
+    if not S.isdigit():
+        return False
+    try:
+        if int(P) > maxAllowed:
+            isoEntry.delete(0,'end')
+            isoEntry.insert(0,str(maxISO))
+            isoEntry.config(validate='key')
+            return False
+        else:
+            return True
+    except:
+        return True
+validation = mainwindow.register(maxInput)
 iso = str(currentCamera.get_iso())
 def setISO():
     currentCamera.set_iso(str(isoEntry.get()))
