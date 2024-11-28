@@ -215,6 +215,10 @@ def decrement_iso():
         iso_index = 0
 
 # Aperture Controls
+## aperture may need further tweaking 
+## given that inputs are floats and not int
+## this implementation will  most likely 
+## break the aperture entry
 maxAperture = 16
 def allowedAperture(S,P,d):
     if len(P) < 2 and d == '0':
