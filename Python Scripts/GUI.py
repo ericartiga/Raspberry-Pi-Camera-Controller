@@ -275,7 +275,7 @@ shutterSpeedDecrement = tk.Button(master=controlFrame, text="<", padx=25,pady=2,
 # ISO Controls
 ## possible solution for max input
 maxISO = 4000
-def maxInput(S,P):
+def allowedISO(S,P):
     if not S.isdigit():
         return False
     try:
@@ -288,7 +288,7 @@ def maxInput(S,P):
             return True
     except:
         return True
-validation = mainwindow.register(maxInput)
+validationISO = mainwindow.register(allowedISO)
 iso = str(currentCamera.get_iso())
 def setISO():
     currentCamera.set_iso(str(isoEntry.get()))
@@ -297,8 +297,7 @@ def setISO():
     isoEntry.delete(0, 'end')
     isoEntry.insert(0, iso)
 iso_index = 3
-## add 'validate = "key"' and 'validationcommand = (validation,"%S","%P")' to entry args
-isoEntry = tk.Entry(master=controlFrame, justify='center')
+isoEntry = tk.Entry(master=controlFrame, justify='center', validate = 'key', validationcommand = (validationISO,'%S','%P'))
 isoEntry.insert(0, iso)
 isoLabel = tk.Label(master=controlFrame, text="ISO: " + iso, padx=10,pady=5, bg="beige")
 isoIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_iso)
