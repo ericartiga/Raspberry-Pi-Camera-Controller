@@ -215,22 +215,19 @@ def decrement_iso():
         iso_index = 0
 
 # Aperture Controls
-## aperture may need further tweaking 
-## given that inputs are floats and not int
-## this implementation will  most likely 
-## break the aperture entry
 maxAperture = 16
-def allowedAperture(S,P,d):
+def allowedAperture(P,d):
     if len(P) < 2 and d == '0':
         return False
-    elif len(P) > 2 and not S.isdigit():
-        return False
-    elif len(P) > 3 and int(P[2:]) > maxAperture:
-        shutterSpeedEntry.delete(2,'end')
-        shutterSpeedEntry.insert(2,str(maxAperture))
-        ShutterSpeedEntry.config(validate='key')
-        return False
-    else:
+    try:
+        if len(P) > 3 and float(P[2:]) > maxAperture:
+            apertureEntry.delete(2,'end')
+            apertureEntry.insert(2,str(maxAperture))
+            apertureEntry.config(validate='key')
+            return False
+        else:
+            return True
+    except:
         return True
 validationAperture = mainwindow.register(allowedAperture)
 aperture = str(currentCamera.get_aperture())
@@ -241,7 +238,7 @@ def setAperture():
     apertureEntry.delete(0, 'end')
     apertureEntry.insert(0, aperture)
 aperture_index = 3
-apertureEntry = tk.Entry(master=controlFrame, justify='center', validate = "key", validatecommand = (validationAperture,"%S","%P","%d"))
+apertureEntry = tk.Entry(master=controlFrame, justify='center', validate = "key", validatecommand = (validationAperture,"%P","%d"))
 apertureEntry.insert(0, aperture)
 apertureLabel = tk.Label(master=controlFrame, text="Aperture: " + aperture, padx=10,pady=5, bg="beige")
 apertureIncrement = tk.Button(master=controlFrame, text=">", padx=25,pady=2, bg="lightgrey", command = increment_aperture)
