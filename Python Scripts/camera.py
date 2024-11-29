@@ -55,6 +55,7 @@ class Camera:
 			self.initialize_camera()
 		except gp.GPhoto2Error as e:
 			print(f"Error taking photo: {e}")
+			raise
 		
 	def focus_camera(self):
 		try:
