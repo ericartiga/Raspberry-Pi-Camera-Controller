@@ -280,7 +280,7 @@ def convertToStr(num):
     if not num:
         return "Manual"
     else:
-        return "AF-S"x
+        return "AF-S"
 def setCameraMode(update):
     ##update
     if update:
