@@ -280,7 +280,7 @@ def convertToStr(num):
     if not num:
         return "Manual"
     else:
-        return "AF-S"
+        return "AF-S"x
 def setCameraMode(update):
     ##update
     if update:
@@ -304,7 +304,7 @@ def setCameraMode(update):
         packManual()
         
 cameraModeLabel = tk.Label(master=modeFrame, text="Mode: " + convertToStr(cameraMode.get()), padx=10,pady=10, bg="beige")
-cameraModeSet = tk.Button(master=modeFrame, text="Set", command=setCameraMode, padx=50, pady=5, bg="#FEB112")
+cameraModeSet = tk.Button(master=modeFrame, text="Set", command=lambda: setCameraMode(False), padx=50, pady=5, bg="#FEB112")
 autoRadio = tk.Radiobutton(master=modeFrame, text="Auto", variable=cameraMode, value=1, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
 manualRadio = tk.Radiobutton(master=modeFrame, text="Manual", variable=cameraMode, value=0, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
 
