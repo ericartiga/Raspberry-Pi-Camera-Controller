@@ -99,7 +99,10 @@ for i in range(18):
 mainwindow.resizable(False, False)
 mainwindow.geometry("940x728")
 
-currentCamera = Camera()
+try:
+    currentCamera = Camera()
+except Exception as e:
+    print(f"Unexpected error: {e}")
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, borderwidth=30, 
@@ -278,7 +281,16 @@ def convertToStr(num):
         return "Manual"
     else:
         return "AF-S"
-def setCameraMode():
+def setCameraMode(update):
+    ##update
+    if update:
+        current_mode = currentCamera.get_camera_mode()
+        if current_mode == "Automatic":
+            cameraModeLabel.config(text="Mode: AF-S")
+        elif current_mode == "Manual":
+            cameraModeLabel.config(text="Mode: Manual")
+            packManual() 
+        return 
     if cameraMode.get() == currentCamera.get_camera_mode():
         print("Already in selected mode")
         return
@@ -301,6 +313,7 @@ def updateControlValues():
     setAperture(True)
     setISO(True)
     setShutterSpeed(True)
+    setCameraMode(True)
     mainwindow.after(10000, updateControlValues)
 
 def setControlValues():
@@ -353,8 +366,12 @@ def autofocus():
 focusButton = tk.Button(master=mainwindow, text="Focus", command=autofocus, padx = 60, pady = 10)
 
 def lastresortinit():
-    global currentCamera
-    currentCamera = Camera()
+    try:
+        printing("Attempting to reconnect camera!")
+        global currentCamera
+        currentCamera = Camera()
+    except Exception as e:
+        print("")
 initButton = tk.Button(master=infoFrame, text="Init", command=lastresortinit, padx = 10, pady = 3)
 
 ### Camera Processing ###
@@ -582,8 +599,15 @@ def packAuto():
     focusButton.grid(row=19, column = 12, rowspan=3, columnspan=4)
 
 # Pack the main window
-packMain()
-
-# Run the application
-mainwindow.mainloop()
+try:
+    packMain()
+    mainwindow.mainloop()
+except Exception as e:
+    if e.args[0] == -52:  
+        print("Error: Camera not found or unplugged. Please check your camera connection.")
+    else:
+        print(f"Error interacting with the camera: {e}")
+    print("Reconnect your camera and restart the program.")
+    
+    
 
