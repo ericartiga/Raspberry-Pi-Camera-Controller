@@ -34,6 +34,9 @@ def detect_buttons(callbacks):
         time.sleep(0.1)
 
 # #PIN for Buzzer
+BUZZER_PIN = 6
+GPIO.setup(BUZZER_PIN, GPIO.OUT)
+GPIO.output(BUZZER_PIN, GPIO.LOW)
 
 # #PIN for LEDs
 GREEN_PIN = 4
@@ -65,7 +68,7 @@ def ledRapid(PIN_NUM): #3s
         print("low")
         time.sleep(0.5)
         
-def ledRapid(PIN_NUM1, PIN_NUM2): #3s
+def ledRapid(PIN_NUM1, PIN_NUM2, count, active): #3s
     for i in range(3):
         GPIO.output(PIN_NUM1, GPIO.HIGH)
         GPIO.output(PIN_NUM2, GPIO.HIGH)
@@ -89,10 +92,17 @@ import sys
 # Main window setup
 mainwindow = tk.Tk()
 mainwindow.config(bg="#E4A6D5", relief="sunken", borderwidth=2, highlightbackground="black", highlightthickness=2,)
+for i in range(30):
+    mainwindow.rowconfigure(i, weight=1, minsize=5)  
+for i in range(18):
+    mainwindow.columnconfigure(i, weight=1, minsize=5)  
 mainwindow.resizable(False, False)
 mainwindow.geometry("940x728")
 
-currentCamera = Camera()
+try:
+    currentCamera = Camera()
+except Exception as e:
+    print(f"Unexpected error: {e}")
 
 # Create a Frame for the image
 imageFrame = tk.Frame(master=mainwindow, borderwidth=30, 
@@ -144,8 +154,8 @@ def test():
     return
 
 def updateBatteryLabel():
-    battery_life = currentCamera.Camera.get_battery_life()
-    cameraBattery.config(text=f"Battery: {battery_life}%")
+    battery_life = currentCamera.get_battery_life()
+    cameraBattery.config(text=f"Battery: {battery_life}")
     cameraBattery.update()
     mainwindow.after(10000, updateBatteryLabel)
 
@@ -231,8 +241,9 @@ def allowedAperture(P,d):
         return True
 validationAperture = mainwindow.register(allowedAperture)
 aperture = str(currentCamera.get_aperture())
-def setAperture():
-    currentCamera.set_aperture(str(apertureEntry.get()))
+def setAperture(update):
+    if update == False:
+        currentCamera.set_aperture(str(apertureEntry.get()))
     aperture = str(currentCamera.get_aperture())
     apertureLabel.config(text="Aperture: " + aperture)
     apertureEntry.delete(0, 'end')
@@ -260,8 +271,9 @@ def allowedShutterSpeed(S,P,d):
         return True
 validationShutterSpeed = mainwindow.register(allowedShutterSpeed)
 shutterSpeed = str(currentCamera.get_shutter())
-def setShutterSpeed():
-    currentCamera.set_shutter(shutterSpeedEntry.get())
+def setShutterSpeed(update):
+    if update == False:
+        currentCamera.set_shutter(shutterSpeedEntry.get())
     shutterSpeed = str(currentCamera.get_shutter())
     shutterSpeedLabel.config(text="Shutter Speed: " +shutterSpeed)
     shutterSpeedEntry.delete(0, 'end')
@@ -291,8 +303,9 @@ def allowedISO(S,P):
         return True
 validationISO = mainwindow.register(allowedISO)
 iso = str(currentCamera.get_iso())
-def setISO():
-    currentCamera.set_iso(str(isoEntry.get()))
+def setISO(update):
+    if update == False:
+        currentCamera.set_iso(str(isoEntry.get()))
     iso = str(currentCamera.get_iso())
     isoLabel.config(text="ISO: " + iso)
     isoEntry.delete(0, 'end')
@@ -313,7 +326,20 @@ def convertToStr(num):
         return "Manual"
     else:
         return "AF-S"
-def setCameraMode():
+        
+def setCameraMode(update):
+    ##update
+    if update:
+        current_mode = currentCamera.get_camera_mode()
+        if current_mode == 1:
+            #cameraMode.set(1)
+            cameraModeLabel.config(text="Mode: AF-S")
+            packAuto()
+        elif current_mode == 0:
+            #cameraMode.set(0)
+            cameraModeLabel.config(text="Mode: Manual")
+            packManual() 
+        return 
     if cameraMode.get() == currentCamera.get_camera_mode():
         print("Already in selected mode")
         return
@@ -326,17 +352,25 @@ def setCameraMode():
         currentCamera.set_camera_mode("Manual")
         packManual()
         
-        
 cameraModeLabel = tk.Label(master=modeFrame, text="Mode: " + convertToStr(cameraMode.get()), padx=10,pady=10, bg="beige")
-cameraModeSet = tk.Button(master=modeFrame, text="Set", command=setCameraMode, padx=50, pady=5, bg="#FEB112")
+cameraModeSet = tk.Button(master=modeFrame, text="Set", command=lambda: setCameraMode(False), padx=50, pady=5, bg="#FEB112")
 autoRadio = tk.Radiobutton(master=modeFrame, text="Auto", variable=cameraMode, value=1, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
 manualRadio = tk.Radiobutton(master=modeFrame, text="Manual", variable=cameraMode, value=0, bg="beige", bd =0, relief="flat", highlightthickness=0, pady=5)
 
+##Setting control
+def updateControlValues():
+    print("Updating control values")
+    setAperture(True)
+    setISO(True)
+    setShutterSpeed(True)
+    setCameraMode(True)
+    is_updating = False
+    mainwindow.after(10000, updateControlValues)
 
 def setControlValues():
-    setAperture()
-    setISO()
-    setShutterSpeed()
+    setAperture(False)
+    setISO(False)
+    setShutterSpeed(False)
 controlSet = tk.Button(master=controlFrame, text="Set", command=setControlValues, padx=50,pady=15, bg="#FEB112")
 
 ## GUI OPERATION ##
@@ -383,8 +417,12 @@ def autofocus():
 focusButton = tk.Button(master=mainwindow, text="Focus", command=autofocus, padx = 60, pady = 10)
 
 def lastresortinit():
-    global currentCamera
-    currentCamera = Camera()
+    try:
+        printing("Attempting to reconnect camera!")
+        global currentCamera
+        currentCamera = Camera()
+    except Exception as e:
+        print("")
 initButton = tk.Button(master=infoFrame, text="Init", command=lastresortinit, padx = 10, pady = 3)
 
 ### Camera Processing ###
@@ -510,7 +548,7 @@ def startDistanceRanging(distance):
         led(YELLOW_PIN)
         print("You're at "+ str(current))
         if distance < current or elapsed_time > 10:
-            ledRapid(YELLOW_PIN, GREEN_PIN)
+            ledRapid(YELLOW_PIN, GREEN_PIN, 3, 0.5)
             return
         time.sleep(1)
     
@@ -533,15 +571,11 @@ def packMain():
     ##GPIO THREAD##
     GPIO_THREAD = Thread(target=detect_buttons, args=(callbacks,), daemon=True)
     GPIO_THREAD.start()
-    
-    ##setting up
-    for i in range(30):
-        mainwindow.rowconfigure(i, weight=1, minsize=5)  
-
-    for i in range(18):
-        mainwindow.columnconfigure(i, weight=1, minsize=5)  
+    updateBatteryLabel()
+    updateControlValues()
     
     mainwindow.title("Remote Control Interface: " + currentCamera.get_camera_name())
+    
     # Image packing
     image_display.grid(row=0, column=0, columnspan=11, rowspan=11)
     if(cameraMode.get() == 0):
@@ -549,7 +583,7 @@ def packMain():
     else:
         packAuto()
     #Frame
-    imageFrame.grid(row=1, column=0, sticky="nsew", columnspan=11, rowspan=11)
+    imageFrame.grid(row=1, column=0, columnspan=11, rowspan=11)
     controlFrame.grid(row=1, column=12, columnspan=2, rowspan=2)
     modeFrame.grid(row=6, column=12, columnspan=2, rowspan=5)
     otherFrame.grid(row=14, column = 9, columnspan=2, rowspan=3)
@@ -564,8 +598,6 @@ def packMain():
     distanceLabel.grid(row=4, column=0, columnspan=2)
     distanceEntry.grid(row=4, column=2, columnspan=2, rowspan=2)
     ToggleDistancePhoto.grid(row=5, column=0, columnspan=2)
-    
-    # ~ timerSet.grid(row=0, column=4, columnspan=2)
     
     # Camera name and battery labels
     cameraName.grid(row=0, column=0, columnspan=2)
@@ -618,8 +650,15 @@ def packAuto():
     focusButton.grid(row=19, column = 12, rowspan=3, columnspan=4)
 
 # Pack the main window
-packMain()
-
-# Run the application
-mainwindow.mainloop()
+try:
+    packMain()
+    mainwindow.mainloop()
+except Exception as e:
+    if e.args[0] == -52:  
+        print("Error: Camera not found or unplugged. Please check your camera connection.")
+    else:
+        print(f"Error interacting with the camera: {e}")
+    print("Reconnect your camera and restart the program.")
+    
+    
 
