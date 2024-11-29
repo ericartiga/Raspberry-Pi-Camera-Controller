@@ -281,13 +281,17 @@ def convertToStr(num):
         return "Manual"
     else:
         return "AF-S"
+        
 def setCameraMode(update):
     ##update
     if update:
         current_mode = currentCamera.get_camera_mode()
-        if current_mode == "Automatic":
+        if current_mode == 1:
+            #cameraMode.set(1)
             cameraModeLabel.config(text="Mode: AF-S")
-        elif current_mode == "Manual":
+            packAuto()
+        elif current_mode == 0:
+            #cameraMode.set(0)
             cameraModeLabel.config(text="Mode: Manual")
             packManual() 
         return 
@@ -310,10 +314,12 @@ manualRadio = tk.Radiobutton(master=modeFrame, text="Manual", variable=cameraMod
 
 ##Setting control
 def updateControlValues():
+    print("Updating control values")
     setAperture(True)
     setISO(True)
     setShutterSpeed(True)
     setCameraMode(True)
+    is_updating = False
     mainwindow.after(10000, updateControlValues)
 
 def setControlValues():
